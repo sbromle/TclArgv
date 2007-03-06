@@ -1,1 +1,1 @@
-SUBDIRS = libltdl src
+SUBDIRS = src

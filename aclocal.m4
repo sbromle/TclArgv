@@ -11,222 +11,6 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
-# Configure paths for GLIB
-# Owen Taylor     1997-2001
-
-dnl AM_PATH_GLIB_2_0([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND [, MODULES]]]])
-dnl Test for GLIB, and define GLIB_CFLAGS and GLIB_LIBS, if gmodule, gobject or 
-dnl gthread is specified in MODULES, pass to pkg-config
-dnl
-AC_DEFUN([AM_PATH_GLIB_2_0],
-[dnl 
-dnl Get the cflags and libraries from pkg-config
-dnl
-AC_ARG_ENABLE(glibtest, [  --disable-glibtest      do not try to compile and run a test GLIB program],
-		    , enable_glibtest=yes)
-
-  pkg_config_args=glib-2.0
-  for module in . $4
-  do
-      case "$module" in
-         gmodule) 
-             pkg_config_args="$pkg_config_args gmodule-2.0"
-         ;;
-         gmodule-no-export) 
-             pkg_config_args="$pkg_config_args gmodule-no-export-2.0"
-         ;;
-         gobject) 
-             pkg_config_args="$pkg_config_args gobject-2.0"
-         ;;
-         gthread) 
-             pkg_config_args="$pkg_config_args gthread-2.0"
-         ;;
-      esac
-  done
-
-  AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
-
-  no_glib=""
-
-  if test x$PKG_CONFIG != xno ; then
-    if $PKG_CONFIG --atleast-pkgconfig-version 0.7 ; then
-      :
-    else
-      echo *** pkg-config too old; version 0.7 or better required.
-      no_glib=yes
-      PKG_CONFIG=no
-    fi
-  else
-    no_glib=yes
-  fi
-
-  min_glib_version=ifelse([$1], ,2.0.0,$1)
-  AC_MSG_CHECKING(for GLIB - version >= $min_glib_version)
-
-  if test x$PKG_CONFIG != xno ; then
-    ## don't try to run the test against uninstalled libtool libs
-    if $PKG_CONFIG --uninstalled $pkg_config_args; then
-	  echo "Will use uninstalled version of GLib found in PKG_CONFIG_PATH"
-	  enable_glibtest=no
-    fi
-
-    if $PKG_CONFIG --atleast-version $min_glib_version $pkg_config_args; then
-	  :
-    else
-	  no_glib=yes
-    fi
-  fi
-
-  if test x"$no_glib" = x ; then
-    GLIB_GENMARSHAL=`$PKG_CONFIG --variable=glib_genmarshal glib-2.0`
-    GOBJECT_QUERY=`$PKG_CONFIG --variable=gobject_query glib-2.0`
-    GLIB_MKENUMS=`$PKG_CONFIG --variable=glib_mkenums glib-2.0`
-
-    GLIB_CFLAGS=`$PKG_CONFIG --cflags $pkg_config_args`
-    GLIB_LIBS=`$PKG_CONFIG --libs $pkg_config_args`
-    glib_config_major_version=`$PKG_CONFIG --modversion glib-2.0 | \
-           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
-    glib_config_minor_version=`$PKG_CONFIG --modversion glib-2.0 | \
-           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
-    glib_config_micro_version=`$PKG_CONFIG --modversion glib-2.0 | \
-           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
-    if test "x$enable_glibtest" = "xyes" ; then
-      ac_save_CFLAGS="$CFLAGS"
-      ac_save_LIBS="$LIBS"
-      CFLAGS="$CFLAGS $GLIB_CFLAGS"
-      LIBS="$GLIB_LIBS $LIBS"
-dnl
-dnl Now check if the installed GLIB is sufficiently new. (Also sanity
-dnl checks the results of pkg-config to some extent)
-dnl
-      rm -f conf.glibtest
-      AC_TRY_RUN([
-#include <glib.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-int 
-main ()
-{
-  int major, minor, micro;
-  char *tmp_version;
-
-  system ("touch conf.glibtest");
-
-  /* HP/UX 9 (%@#!) writes to sscanf strings */
-  tmp_version = g_strdup("$min_glib_version");
-  if (sscanf(tmp_version, "%d.%d.%d", &major, &minor, &micro) != 3) {
-     printf("%s, bad version string\n", "$min_glib_version");
-     exit(1);
-   }
-
-  if ((glib_major_version != $glib_config_major_version) ||
-      (glib_minor_version != $glib_config_minor_version) ||
-      (glib_micro_version != $glib_config_micro_version))
-    {
-      printf("\n*** 'pkg-config --modversion glib-2.0' returned %d.%d.%d, but GLIB (%d.%d.%d)\n", 
-             $glib_config_major_version, $glib_config_minor_version, $glib_config_micro_version,
-             glib_major_version, glib_minor_version, glib_micro_version);
-      printf ("*** was found! If pkg-config was correct, then it is best\n");
-      printf ("*** to remove the old version of GLib. You may also be able to fix the error\n");
-      printf("*** by modifying your LD_LIBRARY_PATH enviroment variable, or by editing\n");
-      printf("*** /etc/ld.so.conf. Make sure you have run ldconfig if that is\n");
-      printf("*** required on your system.\n");
-      printf("*** If pkg-config was wrong, set the environment variable PKG_CONFIG_PATH\n");
-      printf("*** to point to the correct configuration files\n");
-    } 
-  else if ((glib_major_version != GLIB_MAJOR_VERSION) ||
-	   (glib_minor_version != GLIB_MINOR_VERSION) ||
-           (glib_micro_version != GLIB_MICRO_VERSION))
-    {
-      printf("*** GLIB header files (version %d.%d.%d) do not match\n",
-	     GLIB_MAJOR_VERSION, GLIB_MINOR_VERSION, GLIB_MICRO_VERSION);
-      printf("*** library (version %d.%d.%d)\n",
-	     glib_major_version, glib_minor_version, glib_micro_version);
-    }
-  else
-    {
-      if ((glib_major_version > major) ||
-        ((glib_major_version == major) && (glib_minor_version > minor)) ||
-        ((glib_major_version == major) && (glib_minor_version == minor) && (glib_micro_version >= micro)))
-      {
-        return 0;
-       }
-     else
-      {
-        printf("\n*** An old version of GLIB (%d.%d.%d) was found.\n",
-               glib_major_version, glib_minor_version, glib_micro_version);
-        printf("*** You need a version of GLIB newer than %d.%d.%d. The latest version of\n",
-	       major, minor, micro);
-        printf("*** GLIB is always available from ftp://ftp.gtk.org.\n");
-        printf("***\n");
-        printf("*** If you have already installed a sufficiently new version, this error\n");
-        printf("*** probably means that the wrong copy of the pkg-config shell script is\n");
-        printf("*** being found. The easiest way to fix this is to remove the old version\n");
-        printf("*** of GLIB, but you can also set the PKG_CONFIG environment to point to the\n");
-        printf("*** correct copy of pkg-config. (In this case, you will have to\n");
-        printf("*** modify your LD_LIBRARY_PATH enviroment variable, or edit /etc/ld.so.conf\n");
-        printf("*** so that the correct libraries are found at run-time))\n");
-      }
-    }
-  return 1;
-}
-],, no_glib=yes,[echo $ac_n "cross compiling; assumed OK... $ac_c"])
-       CFLAGS="$ac_save_CFLAGS"
-       LIBS="$ac_save_LIBS"
-     fi
-  fi
-  if test "x$no_glib" = x ; then
-     AC_MSG_RESULT(yes (version $glib_config_major_version.$glib_config_minor_version.$glib_config_micro_version))
-     ifelse([$2], , :, [$2])     
-  else
-     AC_MSG_RESULT(no)
-     if test "$PKG_CONFIG" = "no" ; then
-       echo "*** A new enough version of pkg-config was not found."
-       echo "*** See http://www.freedesktop.org/software/pkgconfig/"
-     else
-       if test -f conf.glibtest ; then
-        :
-       else
-          echo "*** Could not run GLIB test program, checking why..."
-          ac_save_CFLAGS="$CFLAGS"
-          ac_save_LIBS="$LIBS"
-          CFLAGS="$CFLAGS $GLIB_CFLAGS"
-          LIBS="$LIBS $GLIB_LIBS"
-          AC_TRY_LINK([
-#include <glib.h>
-#include <stdio.h>
-],      [ return ((glib_major_version) || (glib_minor_version) || (glib_micro_version)); ],
-        [ echo "*** The test program compiled, but did not run. This usually means"
-          echo "*** that the run-time linker is not finding GLIB or finding the wrong"
-          echo "*** version of GLIB. If it is not finding GLIB, you'll need to set your"
-          echo "*** LD_LIBRARY_PATH environment variable, or edit /etc/ld.so.conf to point"
-          echo "*** to the installed location  Also, make sure you have run ldconfig if that"
-          echo "*** is required on your system"
-	  echo "***"
-          echo "*** If you have an old version installed, it is best to remove it, although"
-          echo "*** you may also be able to get things to work by modifying LD_LIBRARY_PATH" ],
-        [ echo "*** The test program failed to compile or link. See the file config.log for the"
-          echo "*** exact error that occured. This usually means GLIB is incorrectly installed."])
-          CFLAGS="$ac_save_CFLAGS"
-          LIBS="$ac_save_LIBS"
-       fi
-     fi
-     GLIB_CFLAGS=""
-     GLIB_LIBS=""
-     GLIB_GENMARSHAL=""
-     GOBJECT_QUERY=""
-     GLIB_MKENUMS=""
-     ifelse([$3], , :, [$3])
-  fi
-  AC_SUBST(GLIB_CFLAGS)
-  AC_SUBST(GLIB_LIBS)
-  AC_SUBST(GLIB_GENMARSHAL)
-  AC_SUBST(GOBJECT_QUERY)
-  AC_SUBST(GLIB_MKENUMS)
-  rm -f conf.glibtest
-])
-
 # libtool.m4 - Configure libtool for the host system. -*-Autoconf-*-
 
 # serial 48 Debian 1.5.22-4 AC_PROG_LIBTOOL
@@ -6615,7 +6399,7 @@ AC_MSG_RESULT([$SED])
 #				the tclConfig.sh file
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_PATH_TCLCONFIG, [
+AC_DEFUN([SC_PATH_TCLCONFIG], [
     #
     # Ok, lets find the tcl configuration
     # First, look for one uninstalled.
@@ -6719,7 +6503,7 @@ AC_DEFUN(SC_PATH_TCLCONFIG, [
 #				the tkConfig.sh file
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_PATH_TKCONFIG, [
+AC_DEFUN([SC_PATH_TKCONFIG], [
     #
     # Ok, lets find the tk configuration
     # First, look for one uninstalled.
@@ -6823,7 +6607,7 @@ AC_DEFUN(SC_PATH_TKCONFIG, [
 #
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_LOAD_TCLCONFIG, [
+AC_DEFUN([SC_LOAD_TCLCONFIG], [
     AC_MSG_CHECKING([for existence of $TCL_BIN_DIR/tclConfig.sh])
 
     if test -f "$TCL_BIN_DIR/tclConfig.sh" ; then
@@ -6890,7 +6674,7 @@ AC_DEFUN(SC_LOAD_TCLCONFIG, [
 #		TK_BIN_DIR
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_LOAD_TKCONFIG, [
+AC_DEFUN([SC_LOAD_TKCONFIG], [
     AC_MSG_CHECKING([for existence of $TK_BIN_DIR/tkConfig.sh])
 
     if test -f "$TK_BIN_DIR/tkConfig.sh" ; then
@@ -6927,7 +6711,7 @@ AC_DEFUN(SC_LOAD_TKCONFIG, [
 #		TCLSH_PROG
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_PROG_TCLSH, [
+AC_DEFUN([SC_PROG_TCLSH], [
     AC_MSG_CHECKING([for tclsh])
 
     AC_CACHE_VAL(ac_cv_path_tclsh, [
@@ -6973,7 +6757,7 @@ AC_DEFUN(SC_PROG_TCLSH, [
 #		BUILD_TCLSH
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_BUILD_TCLSH, [
+AC_DEFUN([SC_BUILD_TCLSH], [
     AC_MSG_CHECKING([for tclsh in Tcl build directory])
     BUILD_TCLSH=${TCL_BIN_DIR}/tclsh
     AC_MSG_RESULT($BUILD_TCLSH)
@@ -7001,7 +6785,7 @@ AC_DEFUN(SC_BUILD_TCLSH, [
 #		SHARED_BUILD	Value of 1 or 0
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_ENABLE_SHARED, [
+AC_DEFUN([SC_ENABLE_SHARED], [
     AC_MSG_CHECKING([how to build libraries])
     AC_ARG_ENABLE(shared,
 	[  --enable-shared         build and link with shared libraries [--enable-shared]],
@@ -7041,7 +6825,7 @@ AC_DEFUN(SC_ENABLE_SHARED, [
 #		FRAMEWORK_BUILD	Value of 1 or 0
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_ENABLE_FRAMEWORK, [
+AC_DEFUN([SC_ENABLE_FRAMEWORK], [
     AC_MSG_CHECKING([how to package libraries])
     AC_ARG_ENABLE(framework,
 	[  --enable-framework      package shared libraries in MacOSX frameworks [--disable-framework]],
@@ -7096,7 +6880,7 @@ AC_DEFUN(SC_ENABLE_FRAMEWORK, [
 #
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_ENABLE_THREADS, [
+AC_DEFUN([SC_ENABLE_THREADS], [
     AC_MSG_CHECKING(for building with threads)
     AC_ARG_ENABLE(threads, [  --enable-threads        build with threads],
 	[tcl_ok=$enableval], [tcl_ok=no])
@@ -7195,7 +6979,7 @@ AC_DEFUN(SC_ENABLE_THREADS, [
 #
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_ENABLE_SYMBOLS, [
+AC_DEFUN([SC_ENABLE_SYMBOLS], [
     AC_MSG_CHECKING([for build with symbols])
     AC_ARG_ENABLE(symbols, [  --enable-symbols        build with debugging symbols [--disable-symbols]],    [tcl_ok=$enableval], [tcl_ok=no])
 # FIXME: Currently, LDFLAGS_DEFAULT is not used, it should work like CFLAGS_DEFAULT.
@@ -7252,7 +7036,7 @@ AC_DEFUN(SC_ENABLE_SYMBOLS, [
 #
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_ENABLE_LANGINFO, [
+AC_DEFUN([SC_ENABLE_LANGINFO], [
     AC_ARG_ENABLE(langinfo,
 	[  --enable-langinfo	  use nl_langinfo if possible to determine
 			  encoding at startup, otherwise use old heuristic],
@@ -7303,7 +7087,7 @@ AC_DEFUN(SC_ENABLE_LANGINFO, [
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(SC_CONFIG_MANPAGES, [
+AC_DEFUN([SC_CONFIG_MANPAGES], [
     AC_MSG_CHECKING([whether to use symlinks for manpages])
     AC_ARG_ENABLE(man-symlinks,
 	    [  --enable-man-symlinks   use symlinks for the manpages],
@@ -7435,7 +7219,7 @@ AC_DEFUN(SC_CONFIG_MANPAGES, [
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(SC_CONFIG_CFLAGS, [
+AC_DEFUN([SC_CONFIG_CFLAGS], [
 
     # Step 0.a: Enable 64 bit support?
 
@@ -8630,7 +8414,7 @@ dnl        esac
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(SC_SERIAL_PORT, [
+AC_DEFUN([SC_SERIAL_PORT], [
     AC_CHECK_HEADERS(sys/modem.h)
     AC_MSG_CHECKING([termios vs. termio vs. sgtty])
     AC_CACHE_VAL(tcl_cv_api_serial, [
@@ -8759,7 +8543,7 @@ int main() {
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(SC_MISSING_POSIX_HEADERS, [
+AC_DEFUN([SC_MISSING_POSIX_HEADERS], [
     AC_MSG_CHECKING(dirent.h)
     AC_CACHE_VAL(tcl_cv_dirent_h,
     AC_TRY_LINK([#include <sys/types.h>
@@ -8839,7 +8623,7 @@ closedir(d);
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(SC_PATH_X, [
+AC_DEFUN([SC_PATH_X], [
     AC_PATH_X
     not_really_there=""
     if test "$no_x" = ""; then
@@ -8925,7 +8709,7 @@ AC_DEFUN(SC_PATH_X, [
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(SC_BLOCKING_STYLE, [
+AC_DEFUN([SC_BLOCKING_STYLE], [
     AC_CHECK_HEADERS(sys/ioctl.h)
     AC_CHECK_HEADERS(sys/filio.h)
     AC_MSG_CHECKING([FIONBIO vs. O_NONBLOCK for nonblocking I/O])
@@ -8990,7 +8774,7 @@ AC_DEFUN(SC_BLOCKING_STYLE, [
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(SC_TIME_HANDLER, [
+AC_DEFUN([SC_TIME_HANDLER], [
     AC_CHECK_HEADERS(sys/time.h)
     AC_HEADER_TIME
     AC_STRUCT_TIMEZONE
@@ -9067,7 +8851,7 @@ AC_DEFUN(SC_TIME_HANDLER, [
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(SC_BUGGY_STRTOD, [
+AC_DEFUN([SC_BUGGY_STRTOD], [
     AC_CHECK_FUNC(strtod, tcl_strtod=1, tcl_strtod=0)
     if test "$tcl_strtod" = 1; then
 	AC_MSG_CHECKING([for Solaris2.4/Tru64 strtod bugs])
@@ -9129,7 +8913,7 @@ AC_DEFUN(SC_BUGGY_STRTOD, [
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(SC_TCL_LINK_LIBS, [
+AC_DEFUN([SC_TCL_LINK_LIBS], [
     #--------------------------------------------------------------------
     # On a few very rare systems, all of the libm.a stuff is
     # already in libc.a.  Set compiler flags accordingly.
@@ -9206,7 +8990,7 @@ AC_DEFUN(SC_TCL_LINK_LIBS, [
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(SC_TCL_EARLY_FLAG,[
+AC_DEFUN([SC_TCL_EARLY_FLAG],[
     AC_CACHE_VAL([tcl_cv_flag_]translit($1,[A-Z],[a-z]),
 	AC_TRY_COMPILE([$2], $3, [tcl_cv_flag_]translit($1,[A-Z],[a-z])=no,
 	    AC_TRY_COMPILE([[#define ]$1[ 1
@@ -9218,7 +9002,7 @@ AC_DEFUN(SC_TCL_EARLY_FLAG,[
 	tcl_flags="$tcl_flags $1"
     fi])
 
-AC_DEFUN(SC_TCL_EARLY_FLAGS,[
+AC_DEFUN([SC_TCL_EARLY_FLAGS],[
     AC_MSG_CHECKING([for required early compiler flags])
     tcl_flags=""
     SC_TCL_EARLY_FLAG(_ISOC99_SOURCE,[#include <stdlib.h>],
@@ -9252,7 +9036,7 @@ AC_DEFUN(SC_TCL_EARLY_FLAGS,[
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(SC_TCL_64BIT_FLAGS, [
+AC_DEFUN([SC_TCL_64BIT_FLAGS], [
     AC_MSG_CHECKING([for 64-bit integer type])
     AC_CACHE_VAL(tcl_cv_type_64bit,[
 	tcl_cv_type_64bit=none
