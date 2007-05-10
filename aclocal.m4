@@ -1,7 +1,7 @@
-# generated automatically by aclocal 1.9.6 -*- Autoconf -*-
+# generated automatically by aclocal 1.10 -*- Autoconf -*-
 
 # Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-# 2005  Free Software Foundation, Inc.
+# 2005, 2006  Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -10,6 +10,11 @@
 # but WITHOUT ANY WARRANTY, to the extent permitted by law; without
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
+
+m4_if(m4_PACKAGE_VERSION, [2.61],,
+[m4_fatal([this file was generated for autoconf 2.61.
+You have another version of autoconf.  If you want to use that,
+you should regenerate the build system entirely.], [63])])
 
 # libtool.m4 - Configure libtool for the host system. -*-Autoconf-*-
 
@@ -6444,9 +6449,25 @@ AC_DEFUN([SC_PATH_TCLCONFIG], [
 		done
 	    fi
 
+	    # on Darwin, check in Framework installation locations
+	    if test "`uname -s`" = "Darwin" -a x"${ac_cv_c_tclconfig}" = x ; then
+		for i in `ls -d ~/Library/Frameworks 2>/dev/null` \
+			`ls -d /Library/Frameworks 2>/dev/null` \
+			`ls -d /Network/Library/Frameworks 2>/dev/null` \
+			`ls -d /System/Library/Frameworks 2>/dev/null` \
+			; do
+		    if test -f "$i/Tcl.framework/tclConfig.sh" ; then
+			ac_cv_c_tclconfig=`(cd $i/Tcl.framework; pwd)`
+			break
+		    fi
+		done
+	    fi
+
 	    # check in a few common install locations
 	    if test x"${ac_cv_c_tclconfig}" = x ; then
 		for i in `ls -d ${libdir} 2>/dev/null` \
+			`ls -d ${exec_prefix}/lib 2>/dev/null` \
+			`ls -d ${prefix}/lib 2>/dev/null` \
 			`ls -d /usr/local/lib 2>/dev/null` \
 			`ls -d /usr/contrib/lib 2>/dev/null` \
 			`ls -d /usr/lib 2>/dev/null` \
@@ -6475,12 +6496,12 @@ AC_DEFUN([SC_PATH_TCLCONFIG], [
 
 	if test x"${ac_cv_c_tclconfig}" = x ; then
 	    TCL_BIN_DIR="# no Tcl configs found"
-	    AC_MSG_WARN(Can't find Tcl configuration definitions)
+	    AC_MSG_WARN([Can't find Tcl configuration definitions])
 	    exit 0
 	else
 	    no_tcl=
 	    TCL_BIN_DIR=${ac_cv_c_tclconfig}
-	    AC_MSG_RESULT(found $TCL_BIN_DIR/tclConfig.sh)
+	    AC_MSG_RESULT([found ${TCL_BIN_DIR}/tclConfig.sh])
 	fi
     fi
 ])
@@ -6547,9 +6568,26 @@ AC_DEFUN([SC_PATH_TKCONFIG], [
 		    fi
 		done
 	    fi
+
+	    # on Darwin, check in Framework installation locations
+	    if test "`uname -s`" = "Darwin" -a x"${ac_cv_c_tkconfig}" = x ; then
+		for i in `ls -d ~/Library/Frameworks 2>/dev/null` \
+			`ls -d /Library/Frameworks 2>/dev/null` \
+			`ls -d /Network/Library/Frameworks 2>/dev/null` \
+			`ls -d /System/Library/Frameworks 2>/dev/null` \
+			; do
+		    if test -f "$i/Tk.framework/tkConfig.sh" ; then
+			ac_cv_c_tkconfig=`(cd $i/Tk.framework; pwd)`
+			break
+		    fi
+		done
+	    fi
+
 	    # check in a few common install locations
 	    if test x"${ac_cv_c_tkconfig}" = x ; then
 		for i in `ls -d ${libdir} 2>/dev/null` \
+			`ls -d ${exec_prefix}/lib 2>/dev/null` \
+			`ls -d ${prefix}/lib 2>/dev/null` \
 			`ls -d /usr/local/lib 2>/dev/null` \
 			`ls -d /usr/contrib/lib 2>/dev/null` \
 			`ls -d /usr/lib 2>/dev/null` \
@@ -6574,17 +6612,17 @@ AC_DEFUN([SC_PATH_TKCONFIG], [
 		done
 	    fi
 	])
+
 	if test x"${ac_cv_c_tkconfig}" = x ; then
 	    TK_BIN_DIR="# no Tk configs found"
-	    AC_MSG_WARN(Can't find Tk configuration definitions)
+	    AC_MSG_WARN([Can't find Tk configuration definitions])
 	    exit 0
 	else
 	    no_tk=
 	    TK_BIN_DIR=${ac_cv_c_tkconfig}
-	    AC_MSG_RESULT(found $TK_BIN_DIR/tkConfig.sh)
+	    AC_MSG_RESULT([found ${TK_BIN_DIR}/tkConfig.sh])
 	fi
     fi
-
 ])
 
 #------------------------------------------------------------------------
@@ -6602,45 +6640,60 @@ AC_DEFUN([SC_PATH_TKCONFIG], [
 #	Subst the following vars:
 #		TCL_BIN_DIR
 #		TCL_SRC_DIR
-#		TCL_INC_DIR
 #		TCL_LIB_FILE
 #
 #------------------------------------------------------------------------
 
 AC_DEFUN([SC_LOAD_TCLCONFIG], [
-    AC_MSG_CHECKING([for existence of $TCL_BIN_DIR/tclConfig.sh])
+    AC_MSG_CHECKING([for existence of ${TCL_BIN_DIR}/tclConfig.sh])
 
-    if test -f "$TCL_BIN_DIR/tclConfig.sh" ; then
+    if test -f "${TCL_BIN_DIR}/tclConfig.sh" ; then
         AC_MSG_RESULT([loading])
-	. $TCL_BIN_DIR/tclConfig.sh
+	. ${TCL_BIN_DIR}/tclConfig.sh
     else
-        AC_MSG_RESULT([file not found])
+        AC_MSG_RESULT([could not find ${TCL_BIN_DIR}/tclConfig.sh])
     fi
 
-    #
+    # eval is required to do the TCL_DBGX substitution
+    eval "TCL_LIB_FILE=\"${TCL_LIB_FILE}\""
+    eval "TCL_STUB_LIB_FILE=\"${TCL_STUB_LIB_FILE}\""
+
     # If the TCL_BIN_DIR is the build directory (not the install directory),
     # then set the common variable name to the value of the build variables.
     # For example, the variable TCL_LIB_SPEC will be set to the value
     # of TCL_BUILD_LIB_SPEC. An extension should make use of TCL_LIB_SPEC
     # instead of TCL_BUILD_LIB_SPEC since it will work with both an
     # installed and uninstalled version of Tcl.
-    #
-
-    if test -f $TCL_BIN_DIR/Makefile ; then
+    if test -f ${TCL_BIN_DIR}/Makefile ; then
         TCL_LIB_SPEC=${TCL_BUILD_LIB_SPEC}
         TCL_STUB_LIB_SPEC=${TCL_BUILD_STUB_LIB_SPEC}
         TCL_STUB_LIB_PATH=${TCL_BUILD_STUB_LIB_PATH}
+    elif test "`uname -s`" = "Darwin"; then
+	# If Tcl was built as a framework, attempt to use the libraries
+	# from the framework at the given location so that linking works
+	# against Tcl.framework installed in an arbitary location.
+	case ${TCL_DEFS} in
+	    *TCL_FRAMEWORK*)
+		if test -f ${TCL_BIN_DIR}/${TCL_LIB_FILE}; then
+		    for i in "`cd ${TCL_BIN_DIR}; pwd`" \
+			     "`cd ${TCL_BIN_DIR}/../..; pwd`"; do
+			if test "`basename "$i"`" = "${TCL_LIB_FILE}.framework"; then
+			    TCL_LIB_SPEC="-F`dirname "$i"` -framework ${TCL_LIB_FILE}"
+			    break
+			fi
+		    done
+		fi
+		if test -f ${TCL_BIN_DIR}/${TCL_STUB_LIB_FILE}; then
+		    TCL_STUB_LIB_SPEC="-L${TCL_BIN_DIR} ${TCL_STUB_LIB_FLAG}"
+		    TCL_STUB_LIB_PATH="${TCL_BIN_DIR}/${TCL_STUB_LIB_FILE}"
+		fi
+		;;
+	esac
     fi
 
-    #
     # eval is required to do the TCL_DBGX substitution
-    #
-
-    eval "TCL_LIB_FILE=\"${TCL_LIB_FILE}\""
     eval "TCL_LIB_FLAG=\"${TCL_LIB_FLAG}\""
     eval "TCL_LIB_SPEC=\"${TCL_LIB_SPEC}\""
-
-    eval "TCL_STUB_LIB_FILE=\"${TCL_STUB_LIB_FILE}\""
     eval "TCL_STUB_LIB_FLAG=\"${TCL_STUB_LIB_FLAG}\""
     eval "TCL_STUB_LIB_SPEC=\"${TCL_STUB_LIB_SPEC}\""
 
@@ -6675,20 +6728,69 @@ AC_DEFUN([SC_LOAD_TCLCONFIG], [
 #------------------------------------------------------------------------
 
 AC_DEFUN([SC_LOAD_TKCONFIG], [
-    AC_MSG_CHECKING([for existence of $TK_BIN_DIR/tkConfig.sh])
+    AC_MSG_CHECKING([for existence of ${TK_BIN_DIR}/tkConfig.sh])
 
-    if test -f "$TK_BIN_DIR/tkConfig.sh" ; then
+    if test -f "${TK_BIN_DIR}/tkConfig.sh" ; then
         AC_MSG_RESULT([loading])
-	. $TK_BIN_DIR/tkConfig.sh
+	. ${TK_BIN_DIR}/tkConfig.sh
     else
-        AC_MSG_RESULT([could not find $TK_BIN_DIR/tkConfig.sh])
+        AC_MSG_RESULT([could not find ${TK_BIN_DIR}/tkConfig.sh])
     fi
+
+    # eval is required to do the TK_DBGX substitution
+    eval "TK_LIB_FILE=\"${TK_LIB_FILE}\""
+    eval "TK_STUB_LIB_FILE=\"${TK_STUB_LIB_FILE}\""
+
+    # If the TK_BIN_DIR is the build directory (not the install directory),
+    # then set the common variable name to the value of the build variables.
+    # For example, the variable TK_LIB_SPEC will be set to the value
+    # of TK_BUILD_LIB_SPEC. An extension should make use of TK_LIB_SPEC
+    # instead of TK_BUILD_LIB_SPEC since it will work with both an
+    # installed and uninstalled version of Tcl.
+    if test -f ${TK_BIN_DIR}/Makefile ; then
+        TK_LIB_SPEC=${TK_BUILD_LIB_SPEC}
+        TK_STUB_LIB_SPEC=${TK_BUILD_STUB_LIB_SPEC}
+        TK_STUB_LIB_PATH=${TK_BUILD_STUB_LIB_PATH}
+    elif test "`uname -s`" = "Darwin"; then
+	# If Tk was built as a framework, attempt to use the libraries
+	# from the framework at the given location so that linking works
+	# against Tk.framework installed in an arbitary location.
+	case ${TK_DEFS} in
+	    *TK_FRAMEWORK*)
+		if test -f ${TK_BIN_DIR}/${TK_LIB_FILE}; then
+		    for i in "`cd ${TK_BIN_DIR}; pwd`" \
+			     "`cd ${TK_BIN_DIR}/../..; pwd`"; do
+			if test "`basename "$i"`" = "${TK_LIB_FILE}.framework"; then
+			    TK_LIB_SPEC="-F`dirname "$i"` -framework ${TK_LIB_FILE}"
+			    break
+			fi
+		    done
+		fi
+		if test -f ${TK_BIN_DIR}/${TK_STUB_LIB_FILE}; then
+		    TK_STUB_LIB_SPEC="-L${TK_BIN_DIR} ${TK_STUB_LIB_FLAG}"
+		    TK_STUB_LIB_PATH="${TK_BIN_DIR}/${TK_STUB_LIB_FILE}"
+		fi
+		;;
+	esac
+    fi
+
+    # eval is required to do the TK_DBGX substitution
+    eval "TK_LIB_FLAG=\"${TK_LIB_FLAG}\""
+    eval "TK_LIB_SPEC=\"${TK_LIB_SPEC}\""
+    eval "TK_STUB_LIB_FLAG=\"${TK_STUB_LIB_FLAG}\""
+    eval "TK_STUB_LIB_SPEC=\"${TK_STUB_LIB_SPEC}\""
 
     AC_SUBST(TK_VERSION)
     AC_SUBST(TK_BIN_DIR)
     AC_SUBST(TK_SRC_DIR)
-    AC_SUBST(TK_LIB_DIR)
+
     AC_SUBST(TK_LIB_FILE)
+    AC_SUBST(TK_LIB_FLAG)
+    AC_SUBST(TK_LIB_SPEC)
+
+    AC_SUBST(TK_STUB_LIB_FILE)
+    AC_SUBST(TK_STUB_LIB_FLAG)
+    AC_SUBST(TK_STUB_LIB_SPEC)
 ])
 
 #------------------------------------------------------------------------
@@ -6713,7 +6815,6 @@ AC_DEFUN([SC_LOAD_TKCONFIG], [
 
 AC_DEFUN([SC_PROG_TCLSH], [
     AC_MSG_CHECKING([for tclsh])
-
     AC_CACHE_VAL(ac_cv_path_tclsh, [
 	search_path=`echo ${PATH} | sed -e 's/:/ /g'`
 	for dir in $search_path ; do
@@ -6731,7 +6832,7 @@ AC_DEFUN([SC_PROG_TCLSH], [
 
     if test -f "$ac_cv_path_tclsh" ; then
 	TCLSH_PROG="$ac_cv_path_tclsh"
-	AC_MSG_RESULT($TCLSH_PROG)
+	AC_MSG_RESULT([$TCLSH_PROG])
     else
 	# It is not an error if an installed version of Tcl can't be located.
 	TCLSH_PROG=""
@@ -6760,7 +6861,7 @@ AC_DEFUN([SC_PROG_TCLSH], [
 AC_DEFUN([SC_BUILD_TCLSH], [
     AC_MSG_CHECKING([for tclsh in Tcl build directory])
     BUILD_TCLSH=${TCL_BIN_DIR}/tclsh
-    AC_MSG_RESULT($BUILD_TCLSH)
+    AC_MSG_RESULT([$BUILD_TCLSH])
     AC_SUBST(BUILD_TCLSH)
 ])
 
@@ -6826,32 +6927,32 @@ AC_DEFUN([SC_ENABLE_SHARED], [
 #------------------------------------------------------------------------
 
 AC_DEFUN([SC_ENABLE_FRAMEWORK], [
-    AC_MSG_CHECKING([how to package libraries])
-    AC_ARG_ENABLE(framework,
-	[  --enable-framework      package shared libraries in MacOSX frameworks [--disable-framework]],
-	[tcl_ok=$enableval], [tcl_ok=no])
-
-    if test "${enable_framework+set}" = set; then
-	enableval="$enable_framework"
-	tcl_ok=$enableval
-    else
-	tcl_ok=no
-    fi
-
-    if test "$tcl_ok" = "yes" ; then
-	AC_MSG_RESULT([framework])
-	FRAMEWORK_BUILD=1
-	if test "${SHARED_BUILD}" = "0" ; then
-	    AC_MSG_WARN("Frameworks can only be built if --enable-shared is yes")
+    if test "`uname -s`" = "Darwin" ; then
+	AC_MSG_CHECKING([how to package libraries])
+	AC_ARG_ENABLE(framework,
+	    [  --enable-framework      package shared libraries in MacOSX frameworks [--disable-framework]],
+	    [enable_framework=$enableval], [enable_framework=no])
+	if test $enable_framework = yes; then
+	    if test $SHARED_BUILD = 0; then
+		AC_MSG_WARN([Frameworks can only be built if --enable-shared is yes])
+		enable_framework=no
+	    fi
+	    if test $tcl_corefoundation = no; then
+		AC_MSG_WARN([Frameworks can only be used when CoreFoundation is available])
+		enable_framework=no
+	    fi
+	fi
+	if test $enable_framework = yes; then
+	    AC_MSG_RESULT([framework])
+	    FRAMEWORK_BUILD=1
+	else
+	    if test $SHARED_BUILD = 1; then
+		AC_MSG_RESULT([shared library])
+	    else
+		AC_MSG_RESULT([static library])
+	    fi
 	    FRAMEWORK_BUILD=0
 	fi
-	if test $tcl_corefoundation = no; then
-	    AC_MSG_WARN("Frameworks can only be used when CoreFoundation is available")
-	    FRAMEWORK_BUILD=0
-	fi
-    else
-	AC_MSG_RESULT([standard shared library])
-	FRAMEWORK_BUILD=0
     fi
 ])
 
@@ -6881,18 +6982,15 @@ AC_DEFUN([SC_ENABLE_FRAMEWORK], [
 #------------------------------------------------------------------------
 
 AC_DEFUN([SC_ENABLE_THREADS], [
-    AC_MSG_CHECKING(for building with threads)
     AC_ARG_ENABLE(threads, [  --enable-threads        build with threads],
 	[tcl_ok=$enableval], [tcl_ok=no])
 
+    if test "${TCL_THREADS}" = 1; then
+	tcl_threaded_core=1;
+    fi
+
     if test "$tcl_ok" = "yes" -o "${TCL_THREADS}" = 1; then
-	if test "${TCL_THREADS}" = 1; then
-	    AC_MSG_RESULT([yes (threaded core)])
-	else
-	    AC_MSG_RESULT([yes])
-	fi
 	TCL_THREADS=1
-	AC_DEFINE(TCL_THREADS)
 	# USE_THREAD_ALLOC tells us to try the special thread-based
 	# allocator that significantly reduces lock contention
 	AC_DEFINE(USE_THREAD_ALLOC)
@@ -6908,29 +7006,33 @@ AC_DEFUN([SC_ENABLE_THREADS], [
 	    # defined.  We could alternatively do an AC_TRY_COMPILE with
 	    # pthread.h, but that will work with libpthread really doesn't
 	    # exist, like AIX 4.2.  [Bug: 4359]
-	    AC_CHECK_LIB(pthread,__pthread_mutex_init,tcl_ok=yes,tcl_ok=no)
+	    AC_CHECK_LIB(pthread, __pthread_mutex_init,
+		tcl_ok=yes, tcl_ok=no)
 	fi
 
 	if test "$tcl_ok" = "yes"; then
 	    # The space is needed
 	    THREADS_LIBS=" -lpthread"
 	else
-	    AC_CHECK_LIB(pthreads,pthread_mutex_init,tcl_ok=yes,tcl_ok=no)
+	    AC_CHECK_LIB(pthreads, pthread_mutex_init,
+		tcl_ok=yes, tcl_ok=no)
 	    if test "$tcl_ok" = "yes"; then
 		# The space is needed
 		THREADS_LIBS=" -lpthreads"
 	    else
-		AC_CHECK_LIB(c,pthread_mutex_init,tcl_ok=yes,tcl_ok=no)
-	    	if test "$tcl_ok" = "no"; then
-		    AC_CHECK_LIB(c_r,pthread_mutex_init,tcl_ok=yes,tcl_ok=no)
+		AC_CHECK_LIB(c, pthread_mutex_init,
+		    tcl_ok=yes, tcl_ok=no)
+		if test "$tcl_ok" = "no"; then
+		    AC_CHECK_LIB(c_r, pthread_mutex_init,
+			tcl_ok=yes, tcl_ok=no)
 		    if test "$tcl_ok" = "yes"; then
 			# The space is needed
 			THREADS_LIBS=" -pthread"
 		    else
 			TCL_THREADS=0
-			AC_MSG_WARN("Don t know how to find pthread lib on your system - you must disable thread support or edit the LIBS in the Makefile...")
+			AC_MSG_WARN([Don't know how to find pthread lib on your system - you must disable thread support or edit the LIBS in the Makefile...])
 		    fi
-	    	fi
+		fi
 	    fi
 	fi
 
@@ -6944,8 +7046,20 @@ AC_DEFUN([SC_ENABLE_THREADS], [
 	LIBS=$ac_saved_libs
     else
 	TCL_THREADS=0
+    fi
+    # Do checking message here to not mess up interleaved configure output
+    AC_MSG_CHECKING([for building with threads])
+    if test "${TCL_THREADS}" = 1; then
+	AC_DEFINE(TCL_THREADS, 1, [Are we building with threads enabled?])
+	if test "${tcl_threaded_core}" = 1; then
+	    AC_MSG_RESULT([yes (threaded core)])
+	else
+	    AC_MSG_RESULT([yes])
+	fi
+    else
 	AC_MSG_RESULT([no (default)])
     fi
+
     AC_SUBST(TCL_THREADS)
 ])
 
@@ -7048,10 +7162,10 @@ AC_DEFUN([SC_ENABLE_LANGINFO], [
     fi
     AC_MSG_CHECKING([whether to use nl_langinfo])
     if test "$langinfo_ok" = "yes"; then
-	AC_CACHE_VAL(tcl_cv_langinfo_h,
+	AC_CACHE_VAL(tcl_cv_langinfo_h, [
 	    AC_TRY_COMPILE([#include <langinfo.h>], [nl_langinfo(CODESET);],
-		    [tcl_cv_langinfo_h=yes],[tcl_cv_langinfo_h=no]))
-	AC_MSG_RESULT($tcl_cv_langinfo_h)
+		    [tcl_cv_langinfo_h=yes],[tcl_cv_langinfo_h=no])])
+	AC_MSG_RESULT([$tcl_cv_langinfo_h])
 	if test $tcl_cv_langinfo_h = yes; then
 	    AC_DEFINE(HAVE_LANGINFO)
 	fi
@@ -7099,8 +7213,11 @@ AC_DEFUN([SC_CONFIG_MANPAGES], [
     AC_ARG_ENABLE(man-compression,
 	    [  --enable-man-compression=PROG
 		      compress the manpages with PROG],
-	test "$enableval" = "yes" && AC_MSG_ERROR([missing argument to --enable-man-compression])
-	test "$enableval" != "no" && MAN_FLAGS="$MAN_FLAGS --compress $enableval",
+	[case $enableval in
+	    yes) AC_MSG_ERROR([missing argument to --enable-man-compression]);;
+	    no)  ;;
+	    *)   MAN_FLAGS="$MAN_FLAGS --compress $enableval";;
+	esac],
 	enableval="no")
     AC_MSG_RESULT([$enableval])
     if test "$enableval" != "no"; then
@@ -7118,12 +7235,61 @@ AC_DEFUN([SC_CONFIG_MANPAGES], [
 	    [  --enable-man-suffix=STRING
 		      use STRING as a suffix to manpage file names
 		      (default: $1)],
-	test "$enableval" = "yes" && enableval="$1"
-	test "$enableval" != "no" && MAN_FLAGS="$MAN_FLAGS --suffix $enableval",
+	[case $enableval in
+	    yes) enableval="$1" MAN_FLAGS="$MAN_FLAGS --suffix $enableval";;
+	    no)  ;;
+	    *)   MAN_FLAGS="$MAN_FLAGS --suffix $enableval";;
+	esac],
 	enableval="no")
     AC_MSG_RESULT([$enableval])
 
     AC_SUBST(MAN_FLAGS)
+])
+
+#--------------------------------------------------------------------
+# SC_CONFIG_SYSTEM
+#
+#	Determine what the system is (some things cannot be easily checked
+#	on a feature-driven basis, alas). This can usually be done via the
+#	"uname" command, but there are a few systems, like Next, where
+#	this doesn't work.
+#
+# Arguments:
+#	none
+#
+# Results:
+#	Defines the following var:
+#
+#	system -	System/platform/version identification code.
+#
+#--------------------------------------------------------------------
+
+AC_DEFUN([SC_CONFIG_SYSTEM], [
+    AC_CACHE_CHECK([system version], tcl_cv_sys_version, [
+	if test -f /usr/lib/NextStep/software_version; then
+	    tcl_cv_sys_version=NEXTSTEP-`awk '/3/,/3/' /usr/lib/NextStep/software_version`
+	else
+	    tcl_cv_sys_version=`uname -s`-`uname -r`
+	    if test "$?" -ne 0 ; then
+		AC_MSG_WARN([can't find uname command])
+		tcl_cv_sys_version=unknown
+	    else
+		# Special check for weird MP-RAS system (uname returns weird
+		# results, and the version is kept in special file).
+
+		if test -r /etc/.relid -a "X`uname -n`" = "X`uname -s`" ; then
+		    tcl_cv_sys_version=MP-RAS-`awk '{print [$]3}' /etc/.relid`
+		fi
+		if test "`uname -s`" = "AIX" ; then
+		    tcl_cv_sys_version=AIX-`uname -v`.`uname -r`
+		fi
+		if test "`uname -s`" = "NetBSD" -a -f /etc/debian_version ; then
+		    tcl_cv_sys_version=NetBSD-Debian
+		fi
+	    fi
+	fi
+    ])
+    system=$tcl_cv_sys_version
 ])
 
 #--------------------------------------------------------------------
@@ -7224,57 +7390,26 @@ AC_DEFUN([SC_CONFIG_CFLAGS], [
     # Step 0.a: Enable 64 bit support?
 
     AC_MSG_CHECKING([if 64bit support is requested])
-    AC_ARG_ENABLE(64bit,[  --enable-64bit          enable 64bit support (where applicable)],,enableval="no")
-
-    if test "$enableval" = "yes"; then
-	do64bit=yes
-    else
-	do64bit=no
-    fi
-    AC_MSG_RESULT($do64bit)
+    AC_ARG_ENABLE(64bit,[  --enable-64bit          enable 64bit support (where applicable)],
+	[do64bit=$enableval], [do64bit=no])
+    AC_MSG_RESULT([$do64bit])
 
     # Step 0.b: Enable Solaris 64 bit VIS support?
 
     AC_MSG_CHECKING([if 64bit Sparc VIS support is requested])
-    AC_ARG_ENABLE(64bit-vis,[  --enable-64bit-vis      enable 64bit Sparc VIS support],,enableval="no")
+    AC_ARG_ENABLE(64bit-vis,[  --enable-64bit-vis      enable 64bit Sparc VIS support],
+	[do64bitVIS=$enableval], [do64bitVIS=no])
+    AC_MSG_RESULT([$do64bitVIS])
 
-    if test "$enableval" = "yes"; then
+    if test "$do64bitVIS" = "yes"; then
 	# Force 64bit on with VIS
 	do64bit=yes
-	do64bitVIS=yes
-    else
-	do64bitVIS=no
     fi
-    AC_MSG_RESULT($do64bitVIS)
 
     # Step 1: set the variable "system" to hold the name and version number
-    # for the system.  This can usually be done via the "uname" command, but
-    # there are a few systems, like Next, where this doesn't work.
+    # for the system.
 
-    AC_MSG_CHECKING([system version (for dynamic loading)])
-    if test -f /usr/lib/NextStep/software_version; then
-	system=NEXTSTEP-`awk '/3/,/3/' /usr/lib/NextStep/software_version`
-    else
-	system=`uname -s`-`uname -r`
-	if test "$?" -ne 0 ; then
-	    AC_MSG_RESULT([unknown (can't find uname command)])
-	    system=unknown
-	else
-	    # Special check for weird MP-RAS system (uname returns weird
-	    # results, and the version is kept in special file).
-	
-	    if test -r /etc/.relid -a "X`uname -n`" = "X`uname -s`" ; then
-		system=MP-RAS-`awk '{print $3}' /etc/.relid`
-	    fi
-	    if test "`uname -s`" = "AIX" ; then
-		system=AIX-`uname -v`.`uname -r`
-	    fi
-	    if test "`uname -s`" = "NetBSD" -a -f /etc/debian_version ; then
-		system=NetBSD-Debian
-	    fi
-	    AC_MSG_RESULT($system)
-	fi
-    fi
+    SC_CONFIG_SYSTEM
 
     # Step 2: check for existence of -ldl library.  This is needed because
     # Linux can use either -ldl or -ldld for dynamic loading.
@@ -7478,18 +7613,18 @@ dnl AC_CHECK_TOOL(AR, ar)
 	    # Check to enable 64-bit flags for compiler/linker
 	    if test "$do64bit" = "yes" ; then
 		if test "$GCC" = "yes" ; then
-		    hpux_arch=`gcc -dumpmachine`
+		    hpux_arch=`${CC} -dumpmachine`
 		    case $hpux_arch in
 			hppa64*)
 			    # 64-bit gcc in use.  Fix flags for GNU ld.
 			    do64bit_ok=yes
-			    SHLIB_LD="gcc -shared"
+			    SHLIB_LD="${CC} -shared"
 			    SHLIB_LD_LIBS='${LIBS}'
 			    CC_SEARCH_FLAGS='-Wl,-rpath,${LIB_RUNTIME_DIR}'
 			    LD_SEARCH_FLAGS=${CC_SEARCH_FLAGS}
 			    ;;
 			*)
-			    AC_MSG_WARN("64bit mode not supported with GCC on $system")
+			    AC_MSG_WARN([64bit mode not supported with GCC on $system])
 			    ;;
 		    esac
 		else
@@ -7711,23 +7846,23 @@ dnl AC_CHECK_TOOL(AR, ar)
 		# NetBSD/SPARC needs -fPIC, -fpic will not do.
 		SHLIB_CFLAGS="-fPIC"
 		SHLIB_LD="ld -Bshareable -x"
-		SHLIB_LD_LIBS=""
+		SHLIB_LD_LIBS='${LIBS}'
 		SHLIB_SUFFIX=".so"
 		DL_OBJS="tclLoadDl.o"
 		DL_LIBS=""
 		CC_SEARCH_FLAGS='-Wl,-rpath,${LIB_RUNTIME_DIR}'
 		LD_SEARCH_FLAGS='-rpath ${LIB_RUNTIME_DIR}'
-		AC_MSG_CHECKING(for ELF)
-		AC_EGREP_CPP(yes, [
+		AC_CACHE_CHECK([for ELF], tcl_cv_ld_elf, [
+		    AC_EGREP_CPP(yes, [
 #ifdef __ELF__
 	yes
 #endif
-		],
-		    AC_MSG_RESULT(yes)
-		    SHARED_LIB_SUFFIX='${TCL_TRIM_DOTS}\$\{DBGX\}.so',
-		    AC_MSG_RESULT(no)
+		    ], tcl_cv_ld_elf=yes, tcl_cv_ld_elf=no)])
+		if test $tcl_cv_ld_elf = yes; then
+		    SHARED_LIB_SUFFIX='${TCL_TRIM_DOTS}\$\{DBGX\}.so'
+		else
 		    SHARED_LIB_SUFFIX='${TCL_TRIM_DOTS}\$\{DBGX\}.so.1.0'
-		)
+		fi
 	    ], [
 		SHLIB_CFLAGS=""
 		SHLIB_LD="echo tclLdAout $CC \{$SHLIB_CFLAGS\} | `pwd`/tclsh -r"
@@ -7775,17 +7910,17 @@ dnl AC_CHECK_TOOL(AR, ar)
 		CC_SEARCH_FLAGS='-Wl,-rpath,${LIB_RUNTIME_DIR}'
 		LD_SEARCH_FLAGS=${CC_SEARCH_FLAGS}
 		SHARED_LIB_SUFFIX='${TCL_TRIM_DOTS}\$\{DBGX\}.so.1.0'
-		AC_MSG_CHECKING(for ELF)
-		AC_EGREP_CPP(yes, [
+		AC_CACHE_CHECK([for ELF], tcl_cv_ld_elf, [
+		    AC_EGREP_CPP(yes, [
 #ifdef __ELF__
 	yes
 #endif
-	        ],
-		    AC_MSG_RESULT(yes)
-		    [ LDFLAGS=-Wl,-export-dynamic ],
-		    AC_MSG_RESULT(no)
+		    ], tcl_cv_ld_elf=yes, tcl_cv_ld_elf=no)])
+		if test $tcl_cv_ld_elf = yes; then
+		    LDFLAGS=-Wl,-export-dynamic
+		else
 		    LDFLAGS=""
-	        )
+	        fi
 		;;
 	    esac
 
@@ -7823,79 +7958,91 @@ dnl AC_CHECK_TOOL(AR, ar)
 	    CFLAGS_OPTIMIZE="-Os"
 	    SHLIB_CFLAGS="-fno-common"
 	    if test $do64bit = yes; then
-	        do64bit_ok=yes
-	        CFLAGS="$CFLAGS -arch ppc64 -mpowerpc64 -mcpu=G5"
+		do64bit_ok=yes
+		case `arch` in
+		    ppc)
+			CFLAGS="$CFLAGS -arch ppc64 -mpowerpc64 -mcpu=G5";;
+		    i386)
+			CFLAGS="$CFLAGS -arch x86_64";;
+		    *)
+			AC_MSG_WARN([Don't know how enable 64-bit on architecture `arch`])
+			do64bit_ok=no;;
+		esac
+	    else
+		# Check for combined 32-bit and 64-bit fat build
+		echo "$CFLAGS " | grep -E -q -- '-arch (ppc64|x86_64) ' && \
+		    echo "$CFLAGS " | grep -E -q -- '-arch (ppc|i386) ' && \
+		    fat_32_64=yes
 	    fi
 	    SHLIB_LD='${CC} -dynamiclib ${CFLAGS} ${LDFLAGS}'
 	    AC_CACHE_CHECK([if ld accepts -single_module flag], tcl_cv_ld_single_module, [
-	        hold_ldflags=$LDFLAGS
-	        LDFLAGS="$LDFLAGS -dynamiclib -Wl,-single_module"
-	        AC_TRY_LINK(, [int i;], tcl_cv_ld_single_module=yes, tcl_cv_ld_single_module=no)
-	        LDFLAGS=$hold_ldflags])
+		hold_ldflags=$LDFLAGS
+		LDFLAGS="$LDFLAGS -dynamiclib -Wl,-single_module"
+		AC_TRY_LINK(, [int i;], tcl_cv_ld_single_module=yes, tcl_cv_ld_single_module=no)
+		LDFLAGS=$hold_ldflags])
 	    if test $tcl_cv_ld_single_module = yes; then
-	        SHLIB_LD="${SHLIB_LD} -Wl,-single_module"
+		SHLIB_LD="${SHLIB_LD} -Wl,-single_module"
 	    fi
 	    SHLIB_LD_LIBS='${LIBS}'
 	    SHLIB_SUFFIX=".dylib"
 	    DL_OBJS="tclLoadDyld.o"
 	    DL_LIBS=""
 	    # Don't use -prebind when building for Mac OS X 10.4 or later only:
-	    test -z "${MACOSX_DEPLOYMENT_TARGET}" || \
-		test "`echo "${MACOSX_DEPLOYMENT_TARGET}" | awk -F. '{print [$]2}'`" -lt 4 && \
+	    test "`echo "${MACOSX_DEPLOYMENT_TARGET}" | awk -F '10\\.' '{print int([$]2)}'`" -lt 4 -a \
+		"`echo "${CFLAGS}" | awk -F '-mmacosx-version-min=10\\.' '{print int([$]2)}'`" -lt 4 && \
 		LDFLAGS="$LDFLAGS -prebind"
 	    LDFLAGS="$LDFLAGS -headerpad_max_install_names"
 	    AC_CACHE_CHECK([if ld accepts -search_paths_first flag], tcl_cv_ld_search_paths_first, [
-	        hold_ldflags=$LDFLAGS
-	        LDFLAGS="$LDFLAGS -Wl,-search_paths_first"
-	        AC_TRY_LINK(, [int i;], tcl_cv_ld_search_paths_first=yes, tcl_cv_ld_search_paths_first=no)
-	        LDFLAGS=$hold_ldflags])
+		hold_ldflags=$LDFLAGS
+		LDFLAGS="$LDFLAGS -Wl,-search_paths_first"
+		AC_TRY_LINK(, [int i;], tcl_cv_ld_search_paths_first=yes, tcl_cv_ld_search_paths_first=no)
+		LDFLAGS=$hold_ldflags])
 	    if test $tcl_cv_ld_search_paths_first = yes; then
-	        LDFLAGS="$LDFLAGS -Wl,-search_paths_first"
+		LDFLAGS="$LDFLAGS -Wl,-search_paths_first"
 	    fi
 	    CC_SEARCH_FLAGS=""
 	    LD_SEARCH_FLAGS=""
 	    LD_LIBRARY_PATH_VAR="DYLD_LIBRARY_PATH"
 	    PLAT_OBJS=\$\(MAC\_OSX_OBJS\)
 	    PLAT_SRCS=\$\(MAC\_OSX_SRCS\)
-            AC_MSG_CHECKING([whether to use CoreFoundation])
-            AC_ARG_ENABLE(corefoundation, [  --enable-corefoundation use CoreFoundation API [--enable-corefoundation]],
-                [tcl_corefoundation=$enableval], [tcl_corefoundation=yes])
-            AC_MSG_RESULT([$tcl_corefoundation])
-            if test $tcl_corefoundation = yes; then
-                AC_CACHE_CHECK([for CoreFoundation.framework], tcl_cv_lib_corefoundation, [
-                    hold_libs=$LIBS; hold_cflags=$CFLAGS
-                    if test $do64bit_ok = no ; then
-                        # remove -arch ppc64 from CFLAGS while testing presence
-                        # of CF, otherwise all archs will have CF disabled.
-                        # CF for ppc64 is disabled in tclUnixPort.h instead.
-                        CFLAGS="`echo "$CFLAGS" | sed -e 's/-arch ppc64/-arch ppc/'`"
-                    fi
-                    LIBS="$LIBS -framework CoreFoundation"
-                    AC_TRY_LINK([#include <CoreFoundation/CoreFoundation.h>], 
-                        [CFBundleRef b = CFBundleGetMainBundle();], 
-                        tcl_cv_lib_corefoundation=yes, tcl_cv_lib_corefoundation=no)
-                    LIBS=$hold_libs; CFLAGS=$hold_cflags])
-                if test $tcl_cv_lib_corefoundation = yes; then
-                    LIBS="$LIBS -framework CoreFoundation"
-                    AC_DEFINE(HAVE_COREFOUNDATION)
-                fi
+	    AC_MSG_CHECKING([whether to use CoreFoundation])
+	    AC_ARG_ENABLE(corefoundation, [  --enable-corefoundation use CoreFoundation API [--enable-corefoundation]],
+		[tcl_corefoundation=$enableval], [tcl_corefoundation=yes])
+	    AC_MSG_RESULT([$tcl_corefoundation])
+	    if test $tcl_corefoundation = yes; then
+		AC_CACHE_CHECK([for CoreFoundation.framework], tcl_cv_lib_corefoundation, [
+		    hold_libs=$LIBS; hold_cflags=$CFLAGS
+		    if test "$fat_32_64" = yes; then
+			# On Tiger there is no 64-bit CF, so remove 64-bit archs
+			# from CFLAGS while testing for presence of CF.
+			# 64-bit CF is disabled in tclUnixPort.h if necessary.
+			CFLAGS="`echo "$CFLAGS " | sed -e 's/-arch ppc64 / /g' -e 's/-arch x86_64 / /g'`"
+		    fi
+		    LIBS="$LIBS -framework CoreFoundation"
+		    AC_TRY_LINK([#include <CoreFoundation/CoreFoundation.h>], 
+			[CFBundleRef b = CFBundleGetMainBundle();], 
+			tcl_cv_lib_corefoundation=yes, tcl_cv_lib_corefoundation=no)
+		    LIBS=$hold_libs; CFLAGS=$hold_cflags])
+		if test $tcl_cv_lib_corefoundation = yes; then
+		    LIBS="$LIBS -framework CoreFoundation"
+		    AC_DEFINE(HAVE_COREFOUNDATION)
+		else
+		    tcl_corefoundation=no
+		fi
+		if test "$fat_32_64" = yes -a $tcl_corefoundation = yes; then
+		    AC_CACHE_CHECK([for 64-bit CoreFoundation], tcl_cv_lib_corefoundation_64, [
+			hold_cflags=$CFLAGS
+			CFLAGS="`echo "$CFLAGS " | sed -e 's/-arch ppc / /g' -e 's/-arch i386 / /g'`"
+			AC_TRY_LINK([#include <CoreFoundation/CoreFoundation.h>], 
+			    [CFBundleRef b = CFBundleGetMainBundle();], 
+			    tcl_cv_lib_corefoundation_64=yes, tcl_cv_lib_corefoundation_64=no)
+			CFLAGS=$hold_cflags])
+		    if test $tcl_cv_lib_corefoundation_64 = no; then
+			AC_DEFINE(NO_COREFOUNDATION_64)
+		    fi
+		fi
 	    fi
-	    AC_CHECK_HEADERS(libkern/OSAtomic.h)
-	    AC_CHECK_FUNCS(OSSpinLockLock)
-	    AC_CHECK_HEADERS(copyfile.h)
-	    AC_CHECK_FUNCS(copyfile)
 	    AC_DEFINE(MAC_OSX_TCL)
-	    AC_DEFINE(USE_VFORK)
-	    AC_DEFINE(TCL_DEFAULT_ENCODING,"utf-8")
-	    AC_DEFINE(TCL_LOAD_FROM_MEMORY)
-	    AC_DEFINE(TCL_IO_TRACK_OS_FOR_DRIVER_WITH_BAD_BLOCKING)
-	    # prior to Darwin 7, realpath is not threadsafe, so don't
-	    # use it when threads are enabled, c.f. bug # 711232:
-	    AC_CHECK_FUNC(realpath)
-	    if test $ac_cv_func_realpath = yes -a "${TCL_THREADS}" = 1 \
-	            -a `uname -r | awk -F. '{print [$]1}'` -lt 7 ; then
-	        ac_cv_func_realpath=no
-	    fi
 	    ;;
 	NEXTSTEP-*)
 	    SHLIB_CFLAGS=""
@@ -7908,8 +8055,8 @@ dnl AC_CHECK_TOOL(AR, ar)
 	    LD_SEARCH_FLAGS=""
 	    ;;
 	OS/390-*)
-	    CFLAGS_OPTIMIZE=""      # Optimizer is buggy
-	    AC_DEFINE(_OE_SOCKETS)  # needed in sys/socket.h
+	    CFLAGS_OPTIMIZE=""		# Optimizer is buggy
+	    AC_DEFINE(_OE_SOCKETS)	# needed in sys/socket.h
 	    ;;      
 	OSF1-1.0|OSF1-1.1|OSF1-1.2)
 	    # OSF/1 1.[012] from OSF, and derivatives, including Paragon OSF/1
@@ -8167,12 +8314,14 @@ dnl AC_CHECK_TOOL(AR, ar)
 	    DL_LIBS="-ldl"
 	    # Some UNIX_SV* systems (unixware 1.1.2 for example) have linkers
 	    # that don't grok the -Bexport option.  Test that it does.
-	    hold_ldflags=$LDFLAGS
-	    AC_MSG_CHECKING(for ld accepts -Bexport flag)
-	    LDFLAGS="$LDFLAGS -Wl,-Bexport"
-	    AC_TRY_LINK(, [int i;], [found=yes],
-			[LDFLAGS=$hold_ldflags found=no])
-	    AC_MSG_RESULT($found)
+	    AC_CACHE_CHECK([for ld accepts -Bexport flag], tcl_cv_ld_Bexport, [
+		hold_ldflags=$LDFLAGS
+		LDFLAGS="$LDFLAGS -Wl,-Bexport"
+		AC_TRY_LINK(, [int i;], tcl_cv_ld_Bexport=yes, tcl_cv_ld_Bexport=no)
+	        LDFLAGS=$hold_ldflags])
+	    if test $tcl_cv_ld_Bexport = yes; then
+		LDFLAGS="$LDFLAGS -Wl,-Bexport"
+	    fi
 	    CC_SEARCH_FLAGS=""
 	    LD_SEARCH_FLAGS=""
 	    ;;
@@ -8202,7 +8351,7 @@ dnl AC_CHECK_TOOL(AR, ar)
     # duplicates the v7 fields that are needed.
 
     if test "x$DL_OBJS" = "xtclLoadAout.o" ; then
-	AC_MSG_CHECKING(sys/exec.h)
+	AC_CACHE_CHECK([sys/exec.h], tcl_cv_sysexec_h, [
 	AC_TRY_COMPILE([#include <sys/exec.h>],[
 	    struct exec foo;
 	    unsigned long seek;
@@ -8214,12 +8363,11 @@ dnl AC_CHECK_TOOL(AR, ar)
 #endif
 	    flag = (foo.a_magic == OMAGIC);
 	    return foo.a_text + foo.a_data + foo.a_bss + foo.a_entry;
-    ], tcl_ok=usable, tcl_ok=unusable)
-	AC_MSG_RESULT($tcl_ok)
-	if test $tcl_ok = usable; then
+    ], tcl_cv_sysexec_h=usable, tcl_cv_sysexec_h=unusable)])
+	if test $tcl_cv_sysexec_h = usable; then
 	    AC_DEFINE(USE_SYS_EXEC_H)
 	else
-	    AC_MSG_CHECKING(a.out.h)
+	    AC_CACHE_CHECK([a.out.h], tcl_cv_aout_h, [
 	    AC_TRY_COMPILE([#include <a.out.h>],[
 		struct exec foo;
 		unsigned long seek;
@@ -8231,12 +8379,11 @@ dnl AC_CHECK_TOOL(AR, ar)
 #endif
 		flag = (foo.a_magic == OMAGIC);
 		return foo.a_text + foo.a_data + foo.a_bss + foo.a_entry;
-	    ], tcl_ok=usable, tcl_ok=unusable)
-	    AC_MSG_RESULT($tcl_ok)
-	    if test $tcl_ok = usable; then
+	    ], tcl_cv_aout_h=usable, tcl_cv_aout_h=unusable)])
+	    if test $tcl_cv_aout_h = usable; then
 		AC_DEFINE(USE_A_OUT_H)
 	    else
-		AC_MSG_CHECKING(sys/exec_aout.h)
+		AC_CACHE_CHECK([sys/exec_aout.h], tcl_cv_sysexecaout_h, [
 		AC_TRY_COMPILE([#include <sys/exec_aout.h>],[
 		    struct exec foo;
 		    unsigned long seek;
@@ -8248,9 +8395,8 @@ dnl AC_CHECK_TOOL(AR, ar)
 #endif
 		    flag = (foo.a_midmag == OMAGIC);
 		    return foo.a_text + foo.a_data + foo.a_bss + foo.a_entry;
-		], tcl_ok=usable, tcl_ok=unusable)
-		AC_MSG_RESULT($tcl_ok)
-		if test $tcl_ok = usable; then
+		], tcl_cv_sysexecaout_h=usable, tcl_cv_sysexecaout_h=unusable)])
+		if test $tcl_cv_sysexecaout_h = usable; then
 		    AC_DEFINE(USE_SYS_EXEC_AOUT_H)
 		else
 		    DL_OBJS=""
@@ -8416,8 +8562,7 @@ dnl        esac
 
 AC_DEFUN([SC_SERIAL_PORT], [
     AC_CHECK_HEADERS(sys/modem.h)
-    AC_MSG_CHECKING([termios vs. termio vs. sgtty])
-    AC_CACHE_VAL(tcl_cv_api_serial, [
+    AC_CACHE_CHECK([termios vs. termio vs. sgtty], tcl_cv_api_serial, [
     AC_TRY_RUN([
 #include <termios.h>
 
@@ -8509,7 +8654,6 @@ int main() {
 	termio)  AC_DEFINE(USE_TERMIO);;
 	sgtty)   AC_DEFINE(USE_SGTTY);;
     esac
-    AC_MSG_RESULT($tcl_cv_api_serial)
 ])
 
 #--------------------------------------------------------------------
@@ -8544,8 +8688,7 @@ int main() {
 #--------------------------------------------------------------------
 
 AC_DEFUN([SC_MISSING_POSIX_HEADERS], [
-    AC_MSG_CHECKING(dirent.h)
-    AC_CACHE_VAL(tcl_cv_dirent_h,
+    AC_CACHE_CHECK([dirent.h], tcl_cv_dirent_h, [
     AC_TRY_LINK([#include <sys/types.h>
 #include <dirent.h>], [
 #ifndef _POSIX_SOURCE
@@ -8565,13 +8708,12 @@ d = opendir("foobar");
 entryPtr = readdir(d);
 p = entryPtr->d_name;
 closedir(d);
-], tcl_cv_dirent_h=yes, tcl_cv_dirent_h=no))
+], tcl_cv_dirent_h=yes, tcl_cv_dirent_h=no)])
 
     if test $tcl_cv_dirent_h = no; then
 	AC_DEFINE(NO_DIRENT_H)
     fi
 
-    AC_MSG_RESULT($tcl_ok)
     AC_CHECK_HEADER(errno.h, , [AC_DEFINE(NO_ERRNO_H)])
     AC_CHECK_HEADER(float.h, , [AC_DEFINE(NO_FLOAT_H)])
     AC_CHECK_HEADER(values.h, , [AC_DEFINE(NO_VALUES_H)])
@@ -8636,14 +8778,14 @@ AC_DEFUN([SC_PATH_X], [
 	fi
     fi
     if test "$no_x" = "yes" -o "$not_really_there" = "yes"; then
-	AC_MSG_CHECKING(for X11 header files)
+	AC_MSG_CHECKING([for X11 header files])
 	found_xincludes="no"
 	AC_TRY_CPP([#include <X11/Intrinsic.h>], found_xincludes="yes", found_xincludes="no")
 	if test "$found_xincludes" = "no"; then
 	    dirs="/usr/unsupported/include /usr/local/include /usr/X386/include /usr/X11R6/include /usr/X11R5/include /usr/include/X11R5 /usr/include/X11R4 /usr/openwin/include /usr/X11/include /usr/sww/include"
 	    for i in $dirs ; do
 		if test -r $i/X11/Intrinsic.h; then
-		    AC_MSG_RESULT($i)
+		    AC_MSG_RESULT([$i])
 		    XINCLUDES=" -I$i"
 		    found_xincludes="yes"
 		    break
@@ -8657,16 +8799,16 @@ AC_DEFUN([SC_PATH_X], [
 	fi
     fi
     if test found_xincludes = "no"; then
-	AC_MSG_RESULT(couldn't find any!)
+	AC_MSG_RESULT([couldn't find any!])
     fi
 
     if test "$no_x" = yes; then
-	AC_MSG_CHECKING(for X11 libraries)
+	AC_MSG_CHECKING([for X11 libraries])
 	XLIBSW=nope
 	dirs="/usr/unsupported/lib /usr/local/lib /usr/X386/lib /usr/X11R6/lib /usr/X11R5/lib /usr/lib/X11R5 /usr/lib/X11R4 /usr/openwin/lib /usr/X11/lib /usr/sww/X11/lib"
 	for i in $dirs ; do
 	    if test -r $i/libX11.a -o -r $i/libX11.so -o -r $i/libX11.sl; then
-		AC_MSG_RESULT($i)
+		AC_MSG_RESULT([$i])
 		XLIBSW="-L$i -lX11"
 		x_libraries="$i"
 		break
@@ -8683,7 +8825,7 @@ AC_DEFUN([SC_PATH_X], [
 	AC_CHECK_LIB(Xwindow, XCreateWindow, XLIBSW=-lXwindow)
     fi
     if test "$XLIBSW" = nope ; then
-	AC_MSG_RESULT(couldn't find any!  Using -lX11.)
+	AC_MSG_RESULT([could not find any!  Using -lX11.])
 	XLIBSW=-lX11
     fi
 ])
@@ -8712,25 +8854,8 @@ AC_DEFUN([SC_PATH_X], [
 AC_DEFUN([SC_BLOCKING_STYLE], [
     AC_CHECK_HEADERS(sys/ioctl.h)
     AC_CHECK_HEADERS(sys/filio.h)
+    SC_CONFIG_SYSTEM
     AC_MSG_CHECKING([FIONBIO vs. O_NONBLOCK for nonblocking I/O])
-    if test -f /usr/lib/NextStep/software_version; then
-	system=NEXTSTEP-`awk '/3/,/3/' /usr/lib/NextStep/software_version`
-    else
-	system=`uname -s`-`uname -r`
-	if test "$?" -ne 0 ; then
-	    system=unknown
-	else
-	    # Special check for weird MP-RAS system (uname returns weird
-	    # results, and the version is kept in special file).
-	
-	    if test -r /etc/.relid -a "X`uname -n`" = "X`uname -s`" ; then
-		system=MP-RAS-`awk '{print $3}' /etc/.relid`
-	    fi
-	    if test "`uname -s`" = "AIX" ; then
-		system=AIX-`uname -v`.`uname -r`
-	    fi
-	fi
-    fi
     case $system in
 	# There used to be code here to use FIONBIO under AIX.  However, it
 	# was reported that FIONBIO doesn't work under AIX 3.2.5.  Since
@@ -8739,18 +8864,18 @@ AC_DEFUN([SC_BLOCKING_STYLE], [
 
 	OSF*)
 	    AC_DEFINE(USE_FIONBIO)
-	    AC_MSG_RESULT(FIONBIO)
+	    AC_MSG_RESULT([FIONBIO])
 	    ;;
 	SunOS-4*)
 	    AC_DEFINE(USE_FIONBIO)
-	    AC_MSG_RESULT(FIONBIO)
+	    AC_MSG_RESULT([FIONBIO])
 	    ;;
 	ULTRIX-4.*)
 	    AC_DEFINE(USE_FIONBIO)
-	    AC_MSG_RESULT(FIONBIO)
+	    AC_MSG_RESULT([FIONBIO])
 	    ;;
 	*)
-	    AC_MSG_RESULT(O_NONBLOCK)
+	    AC_MSG_RESULT([O_NONBLOCK])
 	    ;;
     esac
 ])
@@ -8781,20 +8906,16 @@ AC_DEFUN([SC_TIME_HANDLER], [
 
     AC_CHECK_FUNCS(gmtime_r localtime_r)
 
-    AC_MSG_CHECKING([tm_tzadj in struct tm])
-    AC_CACHE_VAL(tcl_cv_member_tm_tzadj,
+    AC_CACHE_CHECK([tm_tzadj in struct tm], tcl_cv_member_tm_tzadj, [
 	AC_TRY_COMPILE([#include <time.h>], [struct tm tm; tm.tm_tzadj;],
-	    tcl_cv_member_tm_tzadj=yes, tcl_cv_member_tm_tzadj=no))
-    AC_MSG_RESULT($tcl_cv_member_tm_tzadj)
+	    tcl_cv_member_tm_tzadj=yes, tcl_cv_member_tm_tzadj=no)])
     if test $tcl_cv_member_tm_tzadj = yes ; then
 	AC_DEFINE(HAVE_TM_TZADJ)
     fi
 
-    AC_MSG_CHECKING([tm_gmtoff in struct tm])
-    AC_CACHE_VAL(tcl_cv_member_tm_gmtoff,
+    AC_CACHE_CHECK([tm_gmtoff in struct tm], tcl_cv_member_tm_gmtoff, [
 	AC_TRY_COMPILE([#include <time.h>], [struct tm tm; tm.tm_gmtoff;],
-	    tcl_cv_member_tm_gmtoff=yes, tcl_cv_member_tm_gmtoff=no))
-    AC_MSG_RESULT($tcl_cv_member_tm_gmtoff)
+	    tcl_cv_member_tm_gmtoff=yes, tcl_cv_member_tm_gmtoff=no)])
     if test $tcl_cv_member_tm_gmtoff = yes ; then
 	AC_DEFINE(HAVE_TM_GMTOFF)
     fi
@@ -8803,28 +8924,24 @@ AC_DEFUN([SC_TIME_HANDLER], [
     # Its important to include time.h in this check, as some systems
     # (like convex) have timezone functions, etc.
     #
-    AC_MSG_CHECKING([long timezone variable])
-    AC_CACHE_VAL(tcl_cv_timezone_long,
+    AC_CACHE_CHECK([long timezone variable], tcl_cv_timezone_long, [
 	AC_TRY_COMPILE([#include <time.h>],
 	    [extern long timezone;
 	    timezone += 1;
 	    exit (0);],
-	    tcl_cv_timezone_long=yes, tcl_cv_timezone_long=no))
-    AC_MSG_RESULT($tcl_cv_timezone_long)
+	    tcl_cv_timezone_long=yes, tcl_cv_timezone_long=no)])
     if test $tcl_cv_timezone_long = yes ; then
 	AC_DEFINE(HAVE_TIMEZONE_VAR)
     else
 	#
 	# On some systems (eg IRIX 6.2), timezone is a time_t and not a long.
 	#
-	AC_MSG_CHECKING([time_t timezone variable])
-	AC_CACHE_VAL(tcl_cv_timezone_time,
+	AC_CACHE_CHECK([time_t timezone variable], tcl_cv_timezone_time, [
 	    AC_TRY_COMPILE([#include <time.h>],
 		[extern time_t timezone;
 		timezone += 1;
 		exit (0);],
-		tcl_cv_timezone_time=yes, tcl_cv_timezone_time=no))
-	AC_MSG_RESULT($tcl_cv_timezone_time)
+		tcl_cv_timezone_time=yes, tcl_cv_timezone_time=no)])
 	if test $tcl_cv_timezone_time = yes ; then
 	    AC_DEFINE(HAVE_TIMEZONE_VAR)
 	fi
@@ -8854,8 +8971,7 @@ AC_DEFUN([SC_TIME_HANDLER], [
 AC_DEFUN([SC_BUGGY_STRTOD], [
     AC_CHECK_FUNC(strtod, tcl_strtod=1, tcl_strtod=0)
     if test "$tcl_strtod" = 1; then
-	AC_MSG_CHECKING([for Solaris2.4/Tru64 strtod bugs])
-	AC_CACHE_VAL(tcl_cv_strtod_buggy,[
+	AC_CACHE_CHECK([for Solaris2.4/Tru64 strtod bugs], tcl_cv_strtod_buggy,[
 	    AC_TRY_RUN([
 		extern double strtod();
 		int main() {
@@ -8875,11 +8991,9 @@ AC_DEFUN([SC_BUGGY_STRTOD], [
 			exit(1);
 		    }
 		    exit(0);
-		}], tcl_cv_strtod_buggy=1, tcl_cv_strtod_buggy=0, tcl_cv_strtod_buggy=0)])
-	if test "$tcl_cv_strtod_buggy" = 1; then
-	    AC_MSG_RESULT(ok)
-	else
-	    AC_MSG_RESULT(buggy)
+		}], tcl_cv_strtod_buggy=ok, tcl_cv_strtod_buggy=buggy,
+		    tcl_cv_strtod_buggy=buggy)])
+	if test "$tcl_cv_strtod_buggy" = buggy; then
 	    LIBOBJS="$LIBOBJS fixstrtod.o"
 	    AC_DEFINE(strtod, fixstrtod)
 	fi
@@ -9000,7 +9114,8 @@ AC_DEFUN([SC_TCL_EARLY_FLAG],[
     if test ["x${tcl_cv_flag_]translit($1,[A-Z],[a-z])[}" = "xyes"] ; then
 	AC_DEFINE($1)
 	tcl_flags="$tcl_flags $1"
-    fi])
+    fi
+])
 
 AC_DEFUN([SC_TCL_EARLY_FLAGS],[
     AC_MSG_CHECKING([for required early compiler flags])
@@ -9012,10 +9127,11 @@ AC_DEFUN([SC_TCL_EARLY_FLAGS],[
     SC_TCL_EARLY_FLAG(_LARGEFILE_SOURCE64,[#include <sys/stat.h>],
 	[char *p = (char *)open64;])
     if test "x${tcl_flags}" = "x" ; then
-	AC_MSG_RESULT(none)
+	AC_MSG_RESULT([none])
     else
-	AC_MSG_RESULT(${tcl_flags})
-    fi])
+	AC_MSG_RESULT([${tcl_flags}])
+    fi
+])
 
 #--------------------------------------------------------------------
 # SC_TCL_64BIT_FLAGS
@@ -9051,31 +9167,27 @@ AC_DEFUN([SC_TCL_64BIT_FLAGS], [
         }],tcl_cv_type_64bit=${tcl_type_64bit})])
     if test "${tcl_cv_type_64bit}" = none ; then
 	AC_DEFINE(TCL_WIDE_INT_IS_LONG)
-	AC_MSG_RESULT(using long)
+	AC_MSG_RESULT([using long])
     else
 	AC_DEFINE_UNQUOTED(TCL_WIDE_INT_TYPE,${tcl_cv_type_64bit})
-	AC_MSG_RESULT(${tcl_cv_type_64bit})
+	AC_MSG_RESULT([${tcl_cv_type_64bit}])
 
 	# Now check for auxiliary declarations
-	AC_MSG_CHECKING([for struct dirent64])
-	AC_CACHE_VAL(tcl_cv_struct_dirent64,[
+	AC_CACHE_CHECK([for struct dirent64], tcl_cv_struct_dirent64,[
 	    AC_TRY_COMPILE([#include <sys/types.h>
 #include <sys/dirent.h>],[struct dirent64 p;],
 		tcl_cv_struct_dirent64=yes,tcl_cv_struct_dirent64=no)])
 	if test "x${tcl_cv_struct_dirent64}" = "xyes" ; then
 	    AC_DEFINE(HAVE_STRUCT_DIRENT64)
 	fi
-	AC_MSG_RESULT(${tcl_cv_struct_dirent64})
 
-	AC_MSG_CHECKING([for struct stat64])
-	AC_CACHE_VAL(tcl_cv_struct_stat64,[
+	AC_CACHE_CHECK([for struct stat64], tcl_cv_struct_stat64,[
 	    AC_TRY_COMPILE([#include <sys/stat.h>],[struct stat64 p;
 ],
 		tcl_cv_struct_stat64=yes,tcl_cv_struct_stat64=no)])
 	if test "x${tcl_cv_struct_stat64}" = "xyes" ; then
 	    AC_DEFINE(HAVE_STRUCT_STAT64)
 	fi
-	AC_MSG_RESULT(${tcl_cv_struct_stat64})
 
 	AC_CHECK_FUNCS(open64 lseek64)
 	AC_MSG_CHECKING([for off64_t])
@@ -9089,13 +9201,378 @@ AC_DEFUN([SC_TCL_64BIT_FLAGS], [
 	        test "x${ac_cv_func_lseek64}" = "xyes" && \
 	        test "x${ac_cv_func_open64}" = "xyes" ; then
 	    AC_DEFINE(HAVE_TYPE_OFF64_T)
-	    AC_MSG_RESULT(yes)
+	    AC_MSG_RESULT([yes])
 	else
-	    AC_MSG_RESULT(no)
+	    AC_MSG_RESULT([no])
 	fi
-    fi])
+    fi
+])
 
-# Copyright (C) 2002, 2003, 2005  Free Software Foundation, Inc.
+#--------------------------------------------------------------------
+# SC_TCL_GETHOSTBYADDR_R
+#
+#	Check if we have MT-safe variant of gethostbyaddr().
+#
+# Arguments:
+#	None
+#	
+# Results:
+#
+#	Might define the following vars:
+#		HAVE_GETHOSTBYADDR_R
+#		HAVE_GETHOSTBYADDR_R_7
+#		HAVE_GETHOSTBYADDR_R_8
+#
+#--------------------------------------------------------------------
+
+AC_DEFUN([SC_TCL_GETHOSTBYADDR_R], [AC_CHECK_FUNC(gethostbyaddr_r, [
+    AC_CACHE_CHECK([for gethostbyaddr_r with 7 args], tcl_cv_api_gethostbyaddr_r_7, [
+    AC_TRY_COMPILE([
+	#include <netdb.h>
+    ], [
+	char *addr;
+	int length;
+	int type;
+	struct hostent *result;
+	char buffer[2048];
+	int buflen = 2048;
+	int h_errnop;
+
+	(void) gethostbyaddr_r(addr, length, type, result, buffer, buflen,
+			       &h_errnop);
+    ], tcl_cv_api_gethostbyaddr_r_7=yes, tcl_cv_api_gethostbyaddr_r_7=no)])
+    tcl_ok=$tcl_cv_api_gethostbyaddr_r_7
+    if test "$tcl_ok" = yes; then
+	AC_DEFINE(HAVE_GETHOSTBYADDR_R_7)
+    else
+	AC_CACHE_CHECK([for gethostbyaddr_r with 8 args], tcl_cv_api_gethostbyaddr_r_8, [
+	AC_TRY_COMPILE([
+	    #include <netdb.h>
+	], [
+	    char *addr;
+	    int length;
+	    int type;
+	    struct hostent *result, *resultp;
+	    char buffer[2048];
+	    int buflen = 2048;
+	    int h_errnop;
+
+	    (void) gethostbyaddr_r(addr, length, type, result, buffer, buflen,
+				   &resultp, &h_errnop);
+	], tcl_cv_api_gethostbyaddr_r_8=yes, tcl_cv_api_gethostbyaddr_r_8=no)])
+	tcl_ok=$tcl_cv_api_gethostbyaddr_r_8
+	if test "$tcl_ok" = yes; then
+	    AC_DEFINE(HAVE_GETHOSTBYADDR_R_8)
+	fi
+    fi
+    if test "$tcl_ok" = yes; then
+	AC_DEFINE(HAVE_GETHOSTBYADDR_R)
+    fi
+])])
+
+#--------------------------------------------------------------------
+# SC_TCL_GETHOSTBYNAME_R
+#
+#	Check to see what variant of gethostbyname_r() we have.
+#	Based on David Arnold's example from the comp.programming.threads
+#	FAQ Q213
+#
+# Arguments:
+#	None
+#	
+# Results:
+#
+#	Might define the following vars:
+#		HAVE_GETHOSTBYADDR_R
+#		HAVE_GETHOSTBYADDR_R_3
+#		HAVE_GETHOSTBYADDR_R_5
+#		HAVE_GETHOSTBYADDR_R_6
+#
+#--------------------------------------------------------------------
+
+AC_DEFUN([SC_TCL_GETHOSTBYNAME_R], [AC_CHECK_FUNC(gethostbyname_r, [
+    AC_CACHE_CHECK([for gethostbyname_r with 6 args], tcl_cv_api_gethostbyname_r_6, [
+    AC_TRY_COMPILE([
+	#include <netdb.h>
+    ], [
+	char *name;
+	struct hostent *he, *res;
+	char buffer[2048];
+	int buflen = 2048;
+	int h_errnop;
+
+	(void) gethostbyname_r(name, he, buffer, buflen, &res, &h_errnop);
+    ], tcl_cv_api_gethostbyname_r_6=yes, tcl_cv_api_gethostbyname_r_6=no)])
+    tcl_ok=$tcl_cv_api_gethostbyname_r_6
+    if test "$tcl_ok" = yes; then
+	AC_DEFINE(HAVE_GETHOSTBYNAME_R_6)
+    else
+	AC_CACHE_CHECK([for gethostbyname_r with 5 args], tcl_cv_api_gethostbyname_r_5, [
+	AC_TRY_COMPILE([
+	    #include <netdb.h>
+	], [
+	    char *name;
+	    struct hostent *he;
+	    char buffer[2048];
+	    int buflen = 2048;
+	    int h_errnop;
+
+	    (void) gethostbyname_r(name, he, buffer, buflen, &h_errnop);
+	], tcl_cv_api_gethostbyname_r_5=yes, tcl_cv_api_gethostbyname_r_5=no)])
+	tcl_ok=$tcl_cv_api_gethostbyname_r_5
+	if test "$tcl_ok" = yes; then
+	    AC_DEFINE(HAVE_GETHOSTBYNAME_R_5)
+	else
+	    AC_CACHE_CHECK([for gethostbyname_r with 3 args], tcl_cv_api_gethostbyname_r_3, [
+	    AC_TRY_COMPILE([
+		#include <netdb.h>
+	    ], [
+		char *name;
+		struct hostent *he;
+		struct hostent_data data;
+
+		(void) gethostbyname_r(name, he, &data);
+	    ], tcl_cv_api_gethostbyname_r_3=yes, tcl_cv_api_gethostbyname_r_3=no)])
+	    tcl_ok=$tcl_cv_api_gethostbyname_r_3
+	    if test "$tcl_ok" = yes; then
+		AC_DEFINE(HAVE_GETHOSTBYNAME_R_3)
+	    fi
+	fi
+    fi
+    if test "$tcl_ok" = yes; then
+	AC_DEFINE(HAVE_GETHOSTBYNAME_R)
+    fi
+])])
+
+#--------------------------------------------------------------------
+# SC_TCL_GETPWUID_R
+#
+#	Check if we have MT-safe variant of getpwuid() and if yes,
+#	which one exactly.
+#
+# Arguments:
+#	None
+#	
+# Results:
+#
+#	Might define the following vars:
+#		HAVE_GETPWUID_R
+#		HAVE_GETPWUID_R_4
+#		HAVE_GETPWUID_R_5
+#
+#--------------------------------------------------------------------
+
+AC_DEFUN([SC_TCL_GETPWUID_R], [AC_CHECK_FUNC(getpwuid_r, [
+    AC_CACHE_CHECK([for getpwuid_r with 5 args], tcl_cv_api_getpwuid_r_5, [
+    AC_TRY_COMPILE([
+	#include <sys/types.h>
+	#include <pwd.h>
+    ], [
+	uid_t uid;
+	struct passwd pw, *pwp;
+	char buf[512];
+	int buflen = 512;
+
+	(void) getpwuid_r(uid, &pw, buf, buflen, &pwp);
+    ], tcl_cv_api_getpwuid_r_5=yes, tcl_cv_api_getpwuid_r_5=no)])
+    tcl_ok=$tcl_cv_api_getpwuid_r_5
+    if test "$tcl_ok" = yes; then
+	AC_DEFINE(HAVE_GETPWUID_R_5)
+    else
+	AC_CACHE_CHECK([for getpwuid_r with 4 args], tcl_cv_api_getpwuid_r_4, [
+	AC_TRY_COMPILE([
+	    #include <sys/types.h>
+	    #include <pwd.h>
+	], [
+	    uid_t uid;
+	    struct passwd pw;
+	    char buf[512];
+	    int buflen = 512;
+
+	    (void)getpwnam_r(uid, &pw, buf, buflen);
+	], tcl_cv_api_getpwuid_r_4=yes, tcl_cv_api_getpwuid_r_4=no)])
+	tcl_ok=$tcl_cv_api_getpwuid_r_4
+	if test "$tcl_ok" = yes; then
+	    AC_DEFINE(HAVE_GETPWUID_R_4)
+	fi
+    fi
+    if test "$tcl_ok" = yes; then
+	AC_DEFINE(HAVE_GETPWUID_R)
+    fi
+])])
+
+#--------------------------------------------------------------------
+# SC_TCL_GETPWNAM_R
+#
+#	Check if we have MT-safe variant of getpwnam() and if yes,
+#	which one exactly.
+#
+# Arguments:
+#	None
+#	
+# Results:
+#
+#	Might define the following vars:
+#		HAVE_GETPWNAM_R
+#		HAVE_GETPWNAM_R_4
+#		HAVE_GETPWNAM_R_5
+#
+#--------------------------------------------------------------------
+
+AC_DEFUN([SC_TCL_GETPWNAM_R], [AC_CHECK_FUNC(getpwnam_r, [
+    AC_CACHE_CHECK([for getpwnam_r with 5 args], tcl_cv_api_getpwnam_r_5, [
+    AC_TRY_COMPILE([
+	#include <sys/types.h>
+	#include <pwd.h>
+    ], [
+	char *name;
+	struct passwd pw, *pwp;
+	char buf[512];
+	int buflen = 512;
+
+	(void) getpwnam_r(name, &pw, buf, buflen, &pwp);
+    ], tcl_cv_api_getpwnam_r_5=yes, tcl_cv_api_getpwnam_r_5=no)])
+    tcl_ok=$tcl_cv_api_getpwnam_r_5
+    if test "$tcl_ok" = yes; then
+	AC_DEFINE(HAVE_GETPWNAM_R_5)
+    else
+	AC_CACHE_CHECK([for getpwnam_r with 4 args], tcl_cv_api_getpwnam_r_4, [
+	AC_TRY_COMPILE([
+	    #include <sys/types.h>
+	    #include <pwd.h>
+	], [
+	    char *name;
+	    struct passwd pw;
+	    char buf[512];
+	    int buflen = 512;
+
+	    (void)getpwnam_r(name, &pw, buf, buflen);
+	], tcl_cv_api_getpwnam_r_4=yes, tcl_cv_api_getpwnam_r_4=no)])
+	tcl_ok=$tcl_cv_api_getpwnam_r_4
+	if test "$tcl_ok" = yes; then
+	    AC_DEFINE(HAVE_GETPWNAM_R_4)
+	fi
+    fi
+    if test "$tcl_ok" = yes; then
+	AC_DEFINE(HAVE_GETPWNAM_R)
+    fi
+])])
+
+#--------------------------------------------------------------------
+# SC_TCL_GETGRGID_R
+#
+#	Check if we have MT-safe variant of getgrgid() and if yes,
+#	which one exactly.
+#
+# Arguments:
+#	None
+#	
+# Results:
+#
+#	Might define the following vars:
+#		HAVE_GETGRGID_R
+#		HAVE_GETGRGID_R_4
+#		HAVE_GETGRGID_R_5
+#
+#--------------------------------------------------------------------
+
+AC_DEFUN([SC_TCL_GETGRGID_R], [AC_CHECK_FUNC(getgrgid_r, [
+    AC_CACHE_CHECK([for getgrgid_r with 5 args], tcl_cv_api_getgrgid_r_5, [
+    AC_TRY_COMPILE([
+	#include <sys/types.h>
+	#include <grp.h>
+    ], [
+	gid_t gid;
+	struct group gr, *grp;
+	char buf[512];
+	int buflen = 512;
+
+	(void) getgrgid_r(gid, &gr, buf, buflen, &grp);
+    ], tcl_cv_api_getgrgid_r_5=yes, tcl_cv_api_getgrgid_r_5=no)])
+    tcl_ok=$tcl_cv_api_getgrgid_r_5
+    if test "$tcl_ok" = yes; then
+	AC_DEFINE(HAVE_GETGRGID_R_5)
+    else
+	AC_CACHE_CHECK([for getgrgid_r with 4 args], tcl_cv_api_getgrgid_r_4, [
+	AC_TRY_COMPILE([
+	    #include <sys/types.h>
+	    #include <grp.h>
+	], [
+	    gid_t gid;
+	    struct group gr;
+	    char buf[512];
+	    int buflen = 512;
+
+	    (void)getgrgid_r(gid, &gr, buf, buflen);
+	], tcl_cv_api_getgrgid_r_4=yes, tcl_cv_api_getgrgid_r_4=no)])
+	tcl_ok=$tcl_cv_api_getgrgid_r_4
+	if test "$tcl_ok" = yes; then
+	    AC_DEFINE(HAVE_GETGRGID_R_4)
+	fi
+    fi
+    if test "$tcl_ok" = yes; then
+	AC_DEFINE(HAVE_GETGRGID_R)
+    fi
+])])
+
+#--------------------------------------------------------------------
+# SC_TCL_GETGRNAM_R
+#
+#	Check if we have MT-safe variant of getgrnam() and if yes,
+#	which one exactly.
+#
+# Arguments:
+#	None
+#	
+# Results:
+#
+#	Might define the following vars:
+#		HAVE_GETGRNAM_R
+#		HAVE_GETGRNAM_R_4
+#		HAVE_GETGRNAM_R_5
+#
+#--------------------------------------------------------------------
+
+AC_DEFUN([SC_TCL_GETGRNAM_R], [AC_CHECK_FUNC(getgrnam_r, [
+    AC_CACHE_CHECK([for getgrnam_r with 5 args], tcl_cv_api_getgrnam_r_5, [
+    AC_TRY_COMPILE([
+	#include <sys/types.h>
+	#include <grp.h>
+    ], [
+	char *name;
+	struct group gr, *grp;
+	char buf[512];
+	int buflen = 512;
+
+	(void) getgrnam_r(name, &gr, buf, buflen, &grp);
+    ], tcl_cv_api_getgrnam_r_5=yes, tcl_cv_api_getgrnam_r_5=no)])
+    tcl_ok=$tcl_cv_api_getgrnam_r_5
+    if test "$tcl_ok" = yes; then
+	AC_DEFINE(HAVE_GETGRNAM_R_5)
+    else
+	AC_CACHE_CHECK([for getgrnam_r with 4 args], tcl_cv_api_getgrnam_r_4, [
+	AC_TRY_COMPILE([
+	    #include <sys/types.h>
+	    #include <grp.h>
+	], [
+	    char *name;
+	    struct group gr;
+	    char buf[512];
+	    int buflen = 512;
+
+	    (void)getgrnam_r(name, &gr, buf, buflen);
+	], tcl_cv_api_getgrnam_r_4=yes, tcl_cv_api_getgrnam_r_4=no)])
+	tcl_ok=$tcl_cv_api_getgrnam_r_4
+	if test "$tcl_ok" = yes; then
+	    AC_DEFINE(HAVE_GETGRNAM_R_4)
+	fi
+    fi
+    if test "$tcl_ok" = yes; then
+	AC_DEFINE(HAVE_GETGRNAM_R)
+    fi
+])])
+
+# Copyright (C) 2002, 2003, 2005, 2006  Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -9105,14 +9582,29 @@ AC_DEFUN([SC_TCL_64BIT_FLAGS], [
 # ----------------------------
 # Automake X.Y traces this macro to ensure aclocal.m4 has been
 # generated from the m4 files accompanying Automake X.Y.
-AC_DEFUN([AM_AUTOMAKE_VERSION], [am__api_version="1.9"])
+# (This private macro should not be called outside this file.)
+AC_DEFUN([AM_AUTOMAKE_VERSION],
+[am__api_version='1.10'
+dnl Some users find AM_AUTOMAKE_VERSION and mistake it for a way to
+dnl require some minimum version.  Point them to the right macro.
+m4_if([$1], [1.10], [],
+      [AC_FATAL([Do not call $0, use AM_INIT_AUTOMAKE([$1]).])])dnl
+])
+
+# _AM_AUTOCONF_VERSION(VERSION)
+# -----------------------------
+# aclocal traces this macro to find the Autoconf version.
+# This is a private macro too.  Using m4_define simplifies
+# the logic in aclocal, which can simply ignore this definition.
+m4_define([_AM_AUTOCONF_VERSION], [])
 
 # AM_SET_CURRENT_AUTOMAKE_VERSION
 # -------------------------------
-# Call AM_AUTOMAKE_VERSION so it can be traced.
+# Call AM_AUTOMAKE_VERSION and AM_AUTOMAKE_VERSION so they can be traced.
 # This function is AC_REQUIREd by AC_INIT_AUTOMAKE.
 AC_DEFUN([AM_SET_CURRENT_AUTOMAKE_VERSION],
-	 [AM_AUTOMAKE_VERSION([1.9.6])])
+[AM_AUTOMAKE_VERSION([1.10])dnl
+_AM_AUTOCONF_VERSION(m4_PACKAGE_VERSION)])
 
 # AM_AUX_DIR_EXPAND                                         -*- Autoconf -*-
 
@@ -9169,14 +9661,14 @@ am_aux_dir=`cd $ac_aux_dir && pwd`
 
 # AM_CONDITIONAL                                            -*- Autoconf -*-
 
-# Copyright (C) 1997, 2000, 2001, 2003, 2004, 2005
+# Copyright (C) 1997, 2000, 2001, 2003, 2004, 2005, 2006
 # Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
 
-# serial 7
+# serial 8
 
 # AM_CONDITIONAL(NAME, SHELL-CONDITION)
 # -------------------------------------
@@ -9185,8 +9677,10 @@ AC_DEFUN([AM_CONDITIONAL],
 [AC_PREREQ(2.52)dnl
  ifelse([$1], [TRUE],  [AC_FATAL([$0: invalid condition: $1])],
 	[$1], [FALSE], [AC_FATAL([$0: invalid condition: $1])])dnl
-AC_SUBST([$1_TRUE])
-AC_SUBST([$1_FALSE])
+AC_SUBST([$1_TRUE])dnl
+AC_SUBST([$1_FALSE])dnl
+_AM_SUBST_NOTMAKE([$1_TRUE])dnl
+_AM_SUBST_NOTMAKE([$1_FALSE])dnl
 if $2; then
   $1_TRUE=
   $1_FALSE='#'
@@ -9200,15 +9694,14 @@ AC_CONFIG_COMMANDS_PRE(
 Usually this means the macro was only invoked conditionally.]])
 fi])])
 
-
-# Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005
+# Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006
 # Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
 
-# serial 8
+# serial 9
 
 # There are a few dirty hacks below to avoid letting `AC_PROG_CC' be
 # written in clear, in which case automake, when reading aclocal.m4,
@@ -9236,6 +9729,7 @@ AC_REQUIRE([AM_DEP_TRACK])dnl
 ifelse([$1], CC,   [depcc="$CC"   am_compiler_list=],
        [$1], CXX,  [depcc="$CXX"  am_compiler_list=],
        [$1], OBJC, [depcc="$OBJC" am_compiler_list='gcc3 gcc'],
+       [$1], UPC,  [depcc="$UPC"  am_compiler_list=],
        [$1], GCJ,  [depcc="$GCJ"  am_compiler_list='gcc3 gcc'],
                    [depcc="$$1"   am_compiler_list=])
 
@@ -9301,6 +9795,7 @@ AC_CACHE_CHECK([dependency style of $depcc],
        depfile=sub/conftest.Po tmpdepfile=sub/conftest.TPo \
        $SHELL ./depcomp $depcc -c -o sub/conftest.${OBJEXT-o} sub/conftest.c \
          >/dev/null 2>conftest.err &&
+       grep sub/conftst1.h sub/conftest.Po > /dev/null 2>&1 &&
        grep sub/conftst6.h sub/conftest.Po > /dev/null 2>&1 &&
        grep sub/conftest.${OBJEXT-o} sub/conftest.Po > /dev/null 2>&1 &&
        ${MAKE-make} -s -f confmf > /dev/null 2>&1; then
@@ -9353,7 +9848,8 @@ if test "x$enable_dependency_tracking" != xno; then
   AMDEPBACKSLASH='\'
 fi
 AM_CONDITIONAL([AMDEP], [test "x$enable_dependency_tracking" != xno])
-AC_SUBST([AMDEPBACKSLASH])
+AC_SUBST([AMDEPBACKSLASH])dnl
+_AM_SUBST_NOTMAKE([AMDEPBACKSLASH])dnl
 ])
 
 # Generate code to set up dependency tracking.              -*- Autoconf -*-
@@ -9378,8 +9874,9 @@ AC_DEFUN([_AM_OUTPUT_DEPENDENCY_COMMANDS],
   # some people rename them; so instead we look at the file content.
   # Grep'ing the first line is not enough: some people post-process
   # each Makefile.in and add a new line on top of each file to say so.
-  # So let's grep whole file.
-  if grep '^#.*generated by automake' $mf > /dev/null 2>&1; then
+  # Grep'ing the whole file is not good either: AIX grep has a line
+  # limit of 2048, but all sed's we know have understand at least 4000.
+  if sed 10q "$mf" | grep '^#.*generated by automake' > /dev/null 2>&1; then
     dirpart=`AS_DIRNAME("$mf")`
   else
     continue
@@ -9426,8 +9923,8 @@ AC_DEFUN([AM_OUTPUT_DEPENDENCY_COMMANDS],
 
 # Do all the work for Automake.                             -*- Autoconf -*-
 
-# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
-# Free Software Foundation, Inc.
+# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
+# 2005, 2006 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -9450,16 +9947,20 @@ AC_DEFUN([AM_OUTPUT_DEPENDENCY_COMMANDS],
 # arguments mandatory, and then we can depend on a new Autoconf
 # release and drop the old call support.
 AC_DEFUN([AM_INIT_AUTOMAKE],
-[AC_PREREQ([2.58])dnl
+[AC_PREREQ([2.60])dnl
 dnl Autoconf wants to disallow AM_ names.  We explicitly allow
 dnl the ones we care about.
 m4_pattern_allow([^AM_[A-Z]+FLAGS$])dnl
 AC_REQUIRE([AM_SET_CURRENT_AUTOMAKE_VERSION])dnl
 AC_REQUIRE([AC_PROG_INSTALL])dnl
-# test to see if srcdir already configured
-if test "`cd $srcdir && pwd`" != "`pwd`" &&
-   test -f $srcdir/config.status; then
-  AC_MSG_ERROR([source directory already configured; run "make distclean" there first])
+if test "`cd $srcdir && pwd`" != "`pwd`"; then
+  # Use -I$(srcdir) only when $(srcdir) != ., so that make's output
+  # is not polluted with repeated "-I."
+  AC_SUBST([am__isrc], [' -I$(srcdir)'])_AM_SUBST_NOTMAKE([am__isrc])dnl
+  # test to see if srcdir already configured
+  if test -f $srcdir/config.status; then
+    AC_MSG_ERROR([source directory already configured; run "make distclean" there first])
+  fi
 fi
 
 # test whether we have cygpath
@@ -9479,6 +9980,9 @@ m4_ifval([$2],
  AC_SUBST([PACKAGE], [$1])dnl
  AC_SUBST([VERSION], [$2])],
 [_AM_SET_OPTIONS([$1])dnl
+dnl Diagnose old-style AC_INIT with new-style AM_AUTOMAKE_INIT.
+m4_if(m4_ifdef([AC_PACKAGE_NAME], 1)m4_ifdef([AC_PACKAGE_VERSION], 1), 11,,
+  [m4_fatal([AC_INIT should be called with package and version arguments])])dnl
  AC_SUBST([PACKAGE], ['AC_PACKAGE_TARNAME'])dnl
  AC_SUBST([VERSION], ['AC_PACKAGE_VERSION'])])dnl
 
@@ -9514,6 +10018,10 @@ AC_PROVIDE_IFELSE([AC_PROG_CXX],
                   [_AM_DEPENDENCIES(CXX)],
                   [define([AC_PROG_CXX],
                           defn([AC_PROG_CXX])[_AM_DEPENDENCIES(CXX)])])dnl
+AC_PROVIDE_IFELSE([AC_PROG_OBJC],
+                  [_AM_DEPENDENCIES(OBJC)],
+                  [define([AC_PROG_OBJC],
+                          defn([AC_PROG_OBJC])[_AM_DEPENDENCIES(OBJC)])])dnl
 ])
 ])
 
@@ -9549,7 +10057,7 @@ echo "timestamp for $1" >`AS_DIRNAME([$1])`/stamp-h[]$_am_stamp_count])
 # Define $install_sh.
 AC_DEFUN([AM_PROG_INSTALL_SH],
 [AC_REQUIRE([AM_AUX_DIR_EXPAND])dnl
-install_sh=${install_sh-"$am_aux_dir/install-sh"}
+install_sh=${install_sh-"\$(SHELL) $am_aux_dir/install-sh"}
 AC_SUBST(install_sh)])
 
 # Copyright (C) 2003, 2005  Free Software Foundation, Inc.
@@ -9627,14 +10135,14 @@ rm -f confinc confmf
 
 # Fake the existence of programs that GNU maintainers use.  -*- Autoconf -*-
 
-# Copyright (C) 1997, 1999, 2000, 2001, 2003, 2005
+# Copyright (C) 1997, 1999, 2000, 2001, 2003, 2004, 2005
 # Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
 
-# serial 4
+# serial 5
 
 # AM_MISSING_PROG(NAME, PROGRAM)
 # ------------------------------
@@ -9650,6 +10158,7 @@ AC_SUBST($1)])
 # If it does, set am_missing_run to use it, otherwise, to nothing.
 AC_DEFUN([AM_MISSING_HAS_RUN],
 [AC_REQUIRE([AM_AUX_DIR_EXPAND])dnl
+AC_REQUIRE_AUX_FILE([missing])dnl
 test x"${MISSING+set}" = xset || MISSING="\${SHELL} $am_aux_dir/missing"
 # Use eval to expand $SHELL
 if eval "$MISSING --run true"; then
@@ -9660,7 +10169,7 @@ else
 fi
 ])
 
-# Copyright (C) 2003, 2004, 2005  Free Software Foundation, Inc.
+# Copyright (C) 2003, 2004, 2005, 2006  Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -9668,60 +10177,23 @@ fi
 
 # AM_PROG_MKDIR_P
 # ---------------
-# Check whether `mkdir -p' is supported, fallback to mkinstalldirs otherwise.
-#
-# Automake 1.8 used `mkdir -m 0755 -p --' to ensure that directories
-# created by `make install' are always world readable, even if the
-# installer happens to have an overly restrictive umask (e.g. 077).
-# This was a mistake.  There are at least two reasons why we must not
-# use `-m 0755':
-#   - it causes special bits like SGID to be ignored,
-#   - it may be too restrictive (some setups expect 775 directories).
-#
-# Do not use -m 0755 and let people choose whatever they expect by
-# setting umask.
-#
-# We cannot accept any implementation of `mkdir' that recognizes `-p'.
-# Some implementations (such as Solaris 8's) are not thread-safe: if a
-# parallel make tries to run `mkdir -p a/b' and `mkdir -p a/c'
-# concurrently, both version can detect that a/ is missing, but only
-# one can create it and the other will error out.  Consequently we
-# restrict ourselves to GNU make (using the --version option ensures
-# this.)
+# Check for `mkdir -p'.
 AC_DEFUN([AM_PROG_MKDIR_P],
-[if mkdir -p --version . >/dev/null 2>&1 && test ! -d ./--version; then
-  # We used to keeping the `.' as first argument, in order to
-  # allow $(mkdir_p) to be used without argument.  As in
-  #   $(mkdir_p) $(somedir)
-  # where $(somedir) is conditionally defined.  However this is wrong
-  # for two reasons:
-  #  1. if the package is installed by a user who cannot write `.'
-  #     make install will fail,
-  #  2. the above comment should most certainly read
-  #     $(mkdir_p) $(DESTDIR)$(somedir)
-  #     so it does not work when $(somedir) is undefined and
-  #     $(DESTDIR) is not.
-  #  To support the latter case, we have to write
-  #     test -z "$(somedir)" || $(mkdir_p) $(DESTDIR)$(somedir),
-  #  so the `.' trick is pointless.
-  mkdir_p='mkdir -p --'
-else
-  # On NextStep and OpenStep, the `mkdir' command does not
-  # recognize any option.  It will interpret all options as
-  # directories to create, and then abort because `.' already
-  # exists.
-  for d in ./-p ./--version;
-  do
-    test -d $d && rmdir $d
-  done
-  # $(mkinstalldirs) is defined by Automake if mkinstalldirs exists.
-  if test -f "$ac_aux_dir/mkinstalldirs"; then
-    mkdir_p='$(mkinstalldirs)'
-  else
-    mkdir_p='$(install_sh) -d'
-  fi
-fi
-AC_SUBST([mkdir_p])])
+[AC_PREREQ([2.60])dnl
+AC_REQUIRE([AC_PROG_MKDIR_P])dnl
+dnl Automake 1.8 to 1.9.6 used to define mkdir_p.  We now use MKDIR_P,
+dnl while keeping a definition of mkdir_p for backward compatibility.
+dnl @MKDIR_P@ is magic: AC_OUTPUT adjusts its value for each Makefile.
+dnl However we cannot define mkdir_p as $(MKDIR_P) for the sake of
+dnl Makefile.ins that do not define MKDIR_P, so we do our own
+dnl adjustment using top_builddir (which is defined more often than
+dnl MKDIR_P).
+AC_SUBST([mkdir_p], ["$MKDIR_P"])dnl
+case $mkdir_p in
+  [[\\/$]]* | ?:[[\\/]]*) ;;
+  */*) mkdir_p="\$(top_builddir)/$mkdir_p" ;;
+esac
+])
 
 # Helper functions for option handling.                     -*- Autoconf -*-
 
@@ -9833,8 +10305,20 @@ dnl Don't test for $cross_compiling = yes, because it might be `maybe'.
 if test "$cross_compiling" != no; then
   AC_CHECK_TOOL([STRIP], [strip], :)
 fi
-INSTALL_STRIP_PROGRAM="\${SHELL} \$(install_sh) -c -s"
+INSTALL_STRIP_PROGRAM="\$(install_sh) -c -s"
 AC_SUBST([INSTALL_STRIP_PROGRAM])])
+
+# Copyright (C) 2006  Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# _AM_SUBST_NOTMAKE(VARIABLE)
+# ---------------------------
+# Prevent Automake from outputing VARIABLE = @VARIABLE@ in Makefile.in.
+# This macro is traced by Automake.
+AC_DEFUN([_AM_SUBST_NOTMAKE])
 
 # Check how to create a tarball.                            -*- Autoconf -*-
 

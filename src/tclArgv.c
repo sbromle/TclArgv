@@ -163,7 +163,7 @@ gotMatch:
 		infoPtr = matchPtr;
 		switch (infoPtr->type) {
 			case TCL_ARGV_CONSTANT:
-				*((int *) infoPtr->dst) = (int) infoPtr->src;
+				*((int *) infoPtr->dst) = (int) ((long)infoPtr->src);
 				break;
 			case TCL_ARGV_INT:
 				if (objc == 0) {
