@@ -162,6 +162,15 @@ Tcl_ParseArgsObjv(interp, objcPtr, objv, remObjv, argTable)
 gotMatch:
 		infoPtr = matchPtr;
 		switch (infoPtr->type) {
+			case TCL_ARGV_OBJ:
+				if (objc == 0) {
+					goto missingArg;
+				} else {
+					*(Tcl_Obj**)infoPtr->dst=(Tcl_Obj*)objv[srcIndex];
+					srcIndex++;
+					objc--;
+				}
+				break;
 			case TCL_ARGV_CONSTANT:
 				*((int *) infoPtr->dst) = (int) ((long)infoPtr->src);
 				break;

@@ -28,6 +28,7 @@ Tcl_ParseArgsObjv(
  * user documentation for details.
  */
 
+#define TCL_ARGV_OBJ               14
 #define TCL_ARGV_CONSTANT          15
 #define TCL_ARGV_INT               16
 #define TCL_ARGV_STRING            17
