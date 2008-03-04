@@ -99,8 +99,26 @@
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
+/* Are we building with threads enabled? */
+#undef TCL_THREADS
+
+/* Use Tcl stubs */
+#undef USE_TCL_STUBS
+
+/* Do we want to use the threaded memory allocator? */
+#undef USE_THREAD_ALLOC
+
 /* Version number of package */
 #undef VERSION
+
+/* Do we really want to follow the standard? Yes we do! */
+#undef _POSIX_PTHREAD_SEMANTICS
+
+/* Do we want the reentrant OS API? */
+#undef _REENTRANT
+
+/* Do we want the thread-safe OS API? */
+#undef _THREAD_SAFE
 
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const

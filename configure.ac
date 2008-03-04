@@ -21,8 +21,33 @@ AC_SUBST(libtclargvversion,["0:2:0"])
 # Checks for libraries.
 
 # tcl
-SC_PATH_TCLCONFIG
-SC_LOAD_TCLCONFIG
+# Use the TEA (Tcl Extention Architecture) macros (in tcl.m4).
+TEA_INIT([3.6])
+# Load the tclConfig.sh file
+# adds the --with-tcl configure option.
+TEA_PATH_TCLCONFIG
+TEA_LOAD_TCLCONFIG
+# Define path to Tcl/Tk headers
+# adds the --with-tclincludes configure option.
+# and defines TCL_INCLUDES
+TEA_PUBLIC_TCL_HEADERS
+# If Tcl was compiles with threads, the following line enables threads here.
+TEA_ENABLE_THREADS
+# We should be using the Tcl stubs libraries.
+AC_ARG_ENABLE([tclstubs],
+ AS_HELP_STRING([--enable-tclstubs],[use Tcl stubs interface (default is YES)]),
+ [case "${enableval}" in
+   yes) ac_cv_enable_tclstubs=$enableval;;
+	 no)  ac_cv_enable_tclstubs=$enableval;;
+	 *) AC_MSG_ERROR([bad value ${enableval} for --enable-tclstubs]);;
+	esac],[ac_cv_enable_tclstubs=yes])
+AC_CACHE_CHECK([whether to use Tcl stubs],
+               [ac_cv_enable_tclstubs],
+							 [ac_cv_enable_tclstubs=yes])
+AM_CONDITIONAL([COND_TCLSTUBS],[test "x$ac_cv_enable_tclstubs" = "xyes"])
+if test "x${ac_cv_enable_tclstubs}" = "xyes"; then
+	AC_DEFINE(USE_TCL_STUBS,1,[Use Tcl stubs])
+fi
 
 # Checks for header files.
 AC_HEADER_STDC
