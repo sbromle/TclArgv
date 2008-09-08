@@ -6,6 +6,7 @@ AC_INIT([Tcl Argv Handling], [2.0.0], [Sam Bromley <sam@sambromley.com>], [tclar
 AM_INIT_AUTOMAKE(tclargv,[2.0.0])
 
 AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_MACRO_DIR([m4])
 
 # Checks for programs.
 AC_PROG_CC
