@@ -1,6 +1,6 @@
 set (PACKAGE tclargv)
 project (${PACKAGE})
-cmake_minimum_required (VERSION 1.0)
+cmake_minimum_required (VERSION 2.6)
 
 option (BUILD_SHARED_LIBS "Build Shared Libraries." ON)
 

@@ -1,6 +1,10 @@
 #ifndef _TCL_PARSE_ARGV_H
 #define _TCL_PARSE_ARGV_H
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <tcl.h>
