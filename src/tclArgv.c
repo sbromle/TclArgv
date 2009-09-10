@@ -253,6 +253,14 @@ gotMatch:
 			case TCL_ARGV_HELP:
 				PrintUsage (interp, argTable);
 				return TCL_ERROR;
+			case TCL_ARGV_IGNORE:
+				break;
+			case TCL_ARGV_IGNORE_ARG:
+				if (objc > 0) {
+					srcIndex++;
+					objc--;
+				}
+				break;
 			default:
 				{
 					char buf[64 + TCL_INTEGER_SPACE];
@@ -385,6 +393,13 @@ PrintUsage(interp, argTable)
 						Tcl_AppendResult(interp, "\n\t\tDefault value: \"",
 								string, "\"", (char *) NULL);
 					}
+					break;
+				}
+			case TCL_ARGV_IGNORE:
+			case TCL_ARGV_IGNORE_ARG:
+				{
+					Tcl_AppendResult(interp, "Ignored for compatibility.",
+							(char *) NULL);
 					break;
 				}
 			default:

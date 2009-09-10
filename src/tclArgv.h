@@ -42,6 +42,8 @@ Tcl_ParseArgsObjv(
 #define TCL_ARGV_GENFUNC           21
 #define TCL_ARGV_HELP              22
 #define TCL_ARGV_END               23
+#define TCL_ARGV_IGNORE            24
+#define TCL_ARGV_IGNORE_ARG        25
 
 #define TCL_ARGV_AUTO_HELP \
 	{"-help",	TCL_ARGV_HELP,	 NULL,	NULL, \
