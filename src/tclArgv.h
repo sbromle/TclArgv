@@ -9,6 +9,10 @@
 #include <stdlib.h>
 #include <tcl.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct {
 	char *key;  /* The key string that flags the option in the argv array.*/
 	int type;   /* Indicates the option type; see blow.                   */
@@ -51,5 +55,9 @@ Tcl_ParseArgsObjv(
 
 #define TCL_ARGV_TABLE_END \
 	{NULL,	TCL_ARGV_END, NULL,	NULL, (char *) NULL}
+
+#ifdef __cplusplus
+} /* closing brace for extern "C" */
+#endif
 
 #endif

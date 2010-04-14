@@ -21,6 +21,10 @@
 #include <tcl.h>
 #include "tclArgv.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
  * Forward declarations for procedures defined in this file:
  */
@@ -409,3 +413,7 @@ PrintUsage(interp, argTable)
 		}
 	}
 }
+
+#ifdef __cplusplus
+} /* closing brace for extern "C" */
+#endif
