@@ -31,6 +31,11 @@ Tcl_ParseArgsObjv(
 	Tcl_ArgvInfo *argTable	/* Array of option descriptions */
 );
 
+/* Append an array of double to a list */
+extern int Tcl_ListObjAppendDoubles(Tcl_Interp *interp,
+		double *array, unsigned int n,
+		Tcl_Obj *rlist);
+
 /*
  * Legal values for the type field of a Tcl_ArgInfo: see the
  * user documentation for details.

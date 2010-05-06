@@ -414,6 +414,23 @@ PrintUsage(interp, argTable)
 	}
 }
 
+/* Append doubles to the end of a Tcl list
+ * rlist must be an allocated Tcl list.
+ */
+int Tcl_ListObjAppendDoubles(Tcl_Interp *interp,
+		double *array, unsigned int n,
+		Tcl_Obj *rlist)
+{
+	unsigned int j;
+	for (j=0;j<n;j++) {
+		if (Tcl_ListObjAppendElement(interp,rlist,
+					Tcl_NewDoubleObj(array[j]))!=TCL_OK) return TCL_ERROR;
+	}
+	return TCL_OK;
+}
+
+
+
 #ifdef __cplusplus
 } /* closing brace for extern "C" */
 #endif
