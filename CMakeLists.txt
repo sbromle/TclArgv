@@ -30,4 +30,11 @@ IF(UNIX AND NOT WIN32)
   ENDIF(CMAKE_UNAME)
 ENDIF(UNIX AND NOT WIN32)
 
+#gitnarc
+exec_program(gn ARGS gen-build-info tclargv -c libTclParseArgv --header) # generate build info source files when we configure
+add_custom_target(gitnarc ALL 
+	gn gen-build-info tclargv -c libTclParseArgv --header) # generate build info source files every time we build
+# set variables to the build info source files
+set(LIBTCLPARSEARGV_BUILDINFO ${PROJECT_BINARY_DIR}/tclargv_buildinfo_libTclParseArgv.c)
+#set(TCLARGV_BUILDINFO_H ${PROJECT_BINARY_DIR}/tclargv_buildinfo.h) 	
 add_subdirectory(src)
