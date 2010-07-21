@@ -228,7 +228,7 @@ gotMatch:
 				break;
 			case TCL_ARGV_FUNC:
 				{
-					typedef int (ArgvFunc) _ANSI_ARGS_ ((char *, char *,
+					typedef int (ArgvFunc) _ANSI_ARGS_ ((char *, const char *,
 								CONST Tcl_Obj *));
 					ArgvFunc *handlerProc;
 
@@ -243,7 +243,7 @@ gotMatch:
 			case TCL_ARGV_GENFUNC:
 				{
 					typedef int (ArgvGenFunc)_ANSI_ARGS_((char *, Tcl_Interp *, 
-								char *, int, Tcl_Obj *CONST*));
+								const char *, int, Tcl_Obj *CONST*));
 					ArgvGenFunc *handlerProc;
 
 					handlerProc = (ArgvGenFunc *) infoPtr->src;

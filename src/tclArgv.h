@@ -14,11 +14,11 @@ extern "C" {
 #endif
 
 typedef struct {
-	char *key;  /* The key string that flags the option in the argv array.*/
+	const char *key;  /* The key string that flags the option in the argv array.*/
 	int type;   /* Indicates the option type; see blow.                   */
 	void *src;  /* Value to be used in setting dst; usage depends on type.*/
 	void *dst;  /* Address of value to be modified; usage depends on type.*/
-	char *help; /* Documentation message describing this option.          */
+	const char *help; /* Documentation message describing this option.          */
 } Tcl_ArgvInfo;
 
 extern int
