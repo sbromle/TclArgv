@@ -27,5 +27,5 @@ set_target_properties (TclParseArgv PROPERTIES VERSION 1.0 SOVERSION 1 INSTALL_R
 ########### install files ###############
 
 # Headers 
-install(FILES tclArgv.h DESTINATION include/${PACKAGE})
-install(TARGETS TclParseArgv DESTINATION lib/${PACKAGE})
+install(FILES tclArgv.h DESTINATION include/${PACKAGE} COMPONENT headers)
+install(TARGETS TclParseArgv DESTINATION lib/${PACKAGE} COMPONENT libraries)

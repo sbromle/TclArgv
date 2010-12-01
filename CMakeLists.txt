@@ -38,3 +38,20 @@ add_custom_target(gitnarc ALL
 set(LIBTCLPARSEARGV_BUILDINFO ${PROJECT_BINARY_DIR}/tclargv_buildinfo_libTclParseArgv.c)
 #set(TCLARGV_BUILDINFO_H ${PROJECT_BINARY_DIR}/tclargv_buildinfo.h) 	
 add_subdirectory(src)
+
+# Following lines are needed to build debian (ubuntu) packages.
+set (CPACK_DEBIAN_PACKAGE_NAME ${PACKAGE})
+set (CPACK_DEBIAN_PACKAGE_VERSION 0.1)
+set (CPACK_DEBIAN_PACKAGE_ARCHITECTURE amd64)
+set (CPACK_DEIBN_PACKAGE_DEPENDS "tcl8.5-dev (>= 8.5.8-2), tcl8.5 (>=8.5.8-2)")
+set (CPACK_DEBIAN_PACKAGE_MAINTAINER "Sam Bromley <sam@sambromley.com>")
+set (CPACK_DEBIAN_PACKAGE_DESCRIPTION "Tcl argument parser on the C side.")
+set (CPACK_DEBIAN_PACKAGE_SECTION "devel")
+set (CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
+set (DEBIAN_PACKAGE_BUILDS_DEPENDS "tcl8.5-dev (>=8.5.8-2)")
+set (CPACK_GENERATOR "DEB")
+set (CPACK_PACKAGE_INSTALL_DIRECTORY "/usr/local/${PACKAGE}/")
+set (CPACK_COMPONENTS_ALL libraries headers)
+set (CPACK_SET_DESTDIR TRUE)
+include(CPack)
+
