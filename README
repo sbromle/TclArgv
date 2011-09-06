@@ -1,7 +1,8 @@
-* MVTH -- Machine Vision Test Harness
+* TclArgv -- C-side argument parsing for Tcl commands
+* in the flavour of TkArgv.
 *************************************
-This purpose of this software is to provide
-a single test harness for the evaluation
-of machine vision filters and stereo
-algorithms while providing a graphical
-display of the results.
+This concept has been accepted for inclusion into Tcl 8.6.
+See TIP#265 http://www.tcl.tk/cgi-bin/tct/tip/view/265
+
+The variant there is a little different. The code here is what
+I am using until Tcl 8.6 comes out.
