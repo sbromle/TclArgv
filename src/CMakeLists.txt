@@ -8,7 +8,6 @@ include_directories(.)
 
 SET (libTclParseArgv_SRCS
 	tclArgv.c tclArgv.h
-	${LIBTCLPARSEARGV_BUILDINFO}
 )
 
 add_library(TclParseArgv ${libTclParseArgv_SRCS})
