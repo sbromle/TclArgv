@@ -30,6 +30,8 @@ int Tcl_GetArgFromObj(Tcl_Interp* interp, Tcl_Obj *obj, T* ptr) {
 // Define your own template specialization to add new types. Return should be TCL_OK
 // or TCL_ERROR depending on success.
 template<>
+int Tcl_GetArgFromObj(Tcl_Interp* interp, Tcl_Obj *obj, void* ptr);
+template<>
 int Tcl_GetArgFromObj(Tcl_Interp* interp, Tcl_Obj *obj, char* ptr);
 template<>
 int Tcl_GetArgFromObj(Tcl_Interp* interp, Tcl_Obj *obj, unsigned char* ptr);
@@ -56,12 +58,12 @@ int Tcl_GetArgFromObj(Tcl_Interp* interp, Tcl_Obj *obj, long double* ptr);
 template<>
 int Tcl_GetArgFromObj(Tcl_Interp* interp, Tcl_Obj *obj, char** ptr);
 
-int Tcl_GetArgsFromObjs(Tcl_Interp* interp, int i, int objc, Tcl_Obj *CONST objv[]);
+int Tcl_GetArgsFromObjs(Tcl_Interp* interp, int objc, Tcl_Obj *CONST objv[]);
 
 template<typename T, typename... Args>
-int Tcl_GetArgsFromObjs(Tcl_Interp* interp, int i, int objc, Tcl_Obj *CONST objv[], T* ptr, Args... args) {
-	if ( i >= objc ) {
-		Tcl_SetResult(interp, (char*)"Not enough arguments.", NULL);
+int Tcl_GetArgsFromObjs(Tcl_Interp* interp, int objc, Tcl_Obj *CONST objv[], T* ptr, Args... args) {
+	if ( objc <= 0 ) {
+		Tcl_AppendResult(interp, "Not enough arguments.", NULL);
 		return TCL_ERROR;
 	}
 	else if ( ptr != NULL && Tcl_GetArgFromObj(interp, *objv, ptr) != TCL_OK ) {
@@ -69,18 +71,13 @@ int Tcl_GetArgsFromObjs(Tcl_Interp* interp, int i, int objc, Tcl_Obj *CONST objv
 	}
 	else {
 		// This bit here is to prevent objv pointer from being incremented too far
-		++i;
-		if ( i < objc-1 )
+		--objc;
+		if ( objc > 0 )
 			++objv;
 		else // We're at the end of known objects anyway, increment i one extra time in case there are more args
-			++i;
-		return Tcl_GetArgsFromObjs(interp, i, objc, objv, args...);
+			--objc;
+		return Tcl_GetArgsFromObjs(interp, objc, objv, args...);
 	}
-}
-
-template<typename T, typename... Args>
-int Tcl_GetArgsFromObjs(Tcl_Interp* interp, int objc, Tcl_Obj *CONST objv[], T* ptr, Args... args) {
-	return Tcl_GetArgsFromObjs(interp, 0, objc, objv, ptr, args...);
 }
 
 #endif

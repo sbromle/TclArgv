@@ -8,7 +8,12 @@
 #include "tclCppArgs.h"
 #include <cstring>
 
-int Tcl_GetArgsFromObjs(Tcl_Interp* interp, int i, int objc, Tcl_Obj *CONST objv[]) {
+int Tcl_GetArgsFromObjs(Tcl_Interp* interp, int objc, Tcl_Obj *CONST objv[]) {
+	return TCL_OK;
+}
+
+template<>
+int Tcl_GetArgFromObj(Tcl_Interp* interp, Tcl_Obj *obj, void* ptr) {
 	return TCL_OK;
 }
 
