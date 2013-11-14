@@ -64,7 +64,7 @@ int Tcl_GetArgsFromObjs(Tcl_Interp* interp, int i, int objc, Tcl_Obj *CONST objv
 		Tcl_SetResult(interp, (char*)"Not enough arguments.", NULL);
 		return TCL_ERROR;
 	}
-	else if ( Tcl_GetArgFromObj(interp, *objv, ptr) != TCL_OK ) {
+	else if ( ptr != NULL && Tcl_GetArgFromObj(interp, *objv, ptr) != TCL_OK ) {
 		return TCL_ERROR;
 	}
 	else {
