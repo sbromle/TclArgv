@@ -12,10 +12,11 @@
 #define CPP_ARGS_H
 
 #include <tcl.h>
+#include <typeinfo>
 
 template<typename T>
 int Tcl_GetArgFromObj(Tcl_Interp* interp, Tcl_Obj *obj, T* ptr) {
-	Tcl_SetResult(interp, (char*)"Type not implemented.\n", NULL);
+	static_assert(sizeof(T*) == 0, "Type not implemented.");
 	return TCL_ERROR;
 }
 
@@ -67,6 +68,7 @@ int Tcl_GetArgsFromObjs(Tcl_Interp* interp, int objc, Tcl_Obj *CONST objv[], T* 
 		return TCL_ERROR;
 	}
 	else if ( ptr != NULL && Tcl_GetArgFromObj(interp, *objv, ptr) != TCL_OK ) {
+		Tcl_AppendResult(interp, "Couldn't interpret argment ", Tcl_GetString(Tcl_NewIntObj(objc)), NULL);
 		return TCL_ERROR;
 	}
 	else {
