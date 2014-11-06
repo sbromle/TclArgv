@@ -30,13 +30,13 @@ extern "C" {
  */
 
 static void	PrintUsage _ANSI_ARGS_((Tcl_Interp *interp,
-		    Tcl_ArgvInfo *argTable));
+		    Tcl_ArgvInfoSB *argTable));
 
 
 /*
  *----------------------------------------------------------------------
  *
- * Tcl_ParseArgsObjv --
+ * Tcl_ParseArgsObjvSB --
  *
  *	Process an objv array according to a table of expected
  *	command-line options.  See the manual page for more details.
@@ -46,7 +46,7 @@ static void	PrintUsage _ANSI_ARGS_((Tcl_Interp *interp,
  *	error occurs then an error message is left in the interp's result.
  *	Under normal conditions, both *objcPtr and *objv are modified
  *	to return the arguments that couldn't be processed here (they
- *	didn't match the option table, or followed an TCL_ARGV_REST
+ *	didn't match the option table, or followed an TCL_ARGV_SB_REST
  *	argument).
  *
  * Side effects:
@@ -58,21 +58,21 @@ static void	PrintUsage _ANSI_ARGS_((Tcl_Interp *interp,
  */
 
 int
-Tcl_ParseArgsObjv(interp, objcPtr, objv, remObjv, argTable)
+Tcl_ParseArgsObjvSB(interp, objcPtr, objv, remObjv, argTable)
 	Tcl_Interp *interp;		/* Place to store error message. */
 	int *objcPtr;		/* Number of arguments in objv.  Modified
 									 * to hold # args left in objv at end. */
 	Tcl_Obj *CONST *objv;/* Array of arguments to be parsed. */
 	Tcl_Obj ***remObjv;	/* Pointer to array of arguments that
 												 * were not processed here.  */
-	Tcl_ArgvInfo *argTable;	/* Array of option descriptions */
+	Tcl_ArgvInfoSB *argTable;	/* Array of option descriptions */
 {
 	Tcl_Obj **leftovers=NULL;
 	int nrem=0;
-	register Tcl_ArgvInfo *infoPtr;
+	register Tcl_ArgvInfoSB *infoPtr;
 	/* Pointer to the current entry in the
 	 * table of argument descriptions. */
-	Tcl_ArgvInfo *matchPtr;	/* Descriptor that matches current argument. */
+	Tcl_ArgvInfoSB *matchPtr;	/* Descriptor that matches current argument. */
 	Tcl_Obj *curArg;		/* Current argument */
 	char *str=NULL;
 	register char c;		/* Second character of current arg (used for
@@ -119,7 +119,7 @@ Tcl_ParseArgsObjv(interp, objcPtr, objv, remObjv, argTable)
 		matchPtr = NULL;
 		infoPtr = argTable;
 		for ( ;
-				(infoPtr != NULL) && (infoPtr->type != TCL_ARGV_END);
+				(infoPtr != NULL) && (infoPtr->type != TCL_ARGV_SB_END);
 				infoPtr++) {
 			if (infoPtr->key == NULL) {
 				continue;
@@ -166,7 +166,7 @@ Tcl_ParseArgsObjv(interp, objcPtr, objv, remObjv, argTable)
 gotMatch:
 		infoPtr = matchPtr;
 		switch (infoPtr->type) {
-			case TCL_ARGV_OBJ:
+			case TCL_ARGV_SB_OBJ:
 				if (objc == 0) {
 					goto missingArg;
 				} else {
@@ -175,10 +175,10 @@ gotMatch:
 					objc--;
 				}
 				break;
-			case TCL_ARGV_CONSTANT:
+			case TCL_ARGV_SB_CONSTANT:
 				*((int *) infoPtr->dst) = (int) ((long)infoPtr->src);
 				break;
-			case TCL_ARGV_INT:
+			case TCL_ARGV_SB_INT:
 				if (objc == 0) {
 					goto missingArg;
 				} else {
@@ -195,7 +195,7 @@ gotMatch:
 					objc--;
 				}
 				break;
-			case TCL_ARGV_STRING:
+			case TCL_ARGV_SB_STRING:
 				if (objc == 0) {
 					goto missingArg;
 				} else {
@@ -205,10 +205,10 @@ gotMatch:
 					objc--;
 				}
 				break;
-			case TCL_ARGV_REST:
+			case TCL_ARGV_SB_REST:
 				*((int *) infoPtr->dst) = dstIndex;
 				goto argsDone;
-			case TCL_ARGV_FLOAT:
+			case TCL_ARGV_SB_FLOAT:
 				if (objc == 0) {
 					goto missingArg;
 				} else {
@@ -226,7 +226,7 @@ gotMatch:
 					objc--;
 				}
 				break;
-			case TCL_ARGV_FUNC:
+			case TCL_ARGV_SB_FUNC:
 				{
 					typedef int (ArgvFunc) _ANSI_ARGS_ ((char *, const char *,
 								CONST Tcl_Obj *));
@@ -240,7 +240,7 @@ gotMatch:
 					}
 					break;
 				}
-			case TCL_ARGV_GENFUNC:
+			case TCL_ARGV_SB_GENFUNC:
 				{
 					typedef int (ArgvGenFunc)_ANSI_ARGS_((char *, Tcl_Interp *, 
 								const char *, int, Tcl_Obj *CONST*));
@@ -254,12 +254,12 @@ gotMatch:
 					}
 					break;
 				}
-			case TCL_ARGV_HELP:
+			case TCL_ARGV_SB_HELP:
 				PrintUsage (interp, argTable);
 				return TCL_ERROR;
-			case TCL_ARGV_IGNORE:
+			case TCL_ARGV_SB_IGNORE:
 				break;
-			case TCL_ARGV_IGNORE_ARG:
+			case TCL_ARGV_SB_IGNORE_ARG:
 				if (objc > 0) {
 					srcIndex++;
 					objc--;
@@ -326,10 +326,10 @@ missingArg:
 PrintUsage(interp, argTable)
 	Tcl_Interp *interp;		/* Place information in this interp's
 												 * result area. */
-	Tcl_ArgvInfo *argTable;	/* Array of command-specific argument
+	Tcl_ArgvInfoSB *argTable;	/* Array of command-specific argument
 													 * descriptions. */
 {
-	register Tcl_ArgvInfo *infoPtr;
+	register Tcl_ArgvInfoSB *infoPtr;
 	int width, numSpaces;
 #define NUM_SPACES 20
 	static char spaces[] = "                    ";
@@ -342,7 +342,7 @@ PrintUsage(interp, argTable)
 
 	width = 4;
 	for (infoPtr = argTable;
-			infoPtr->type != TCL_ARGV_END;
+			infoPtr->type != TCL_ARGV_SB_END;
 			infoPtr++) {
 		int length;
 		if (infoPtr->key == NULL) {
@@ -356,8 +356,8 @@ PrintUsage(interp, argTable)
 
 	Tcl_AppendResult(interp, "Command-specific options:", (char *) NULL);
 	for (infoPtr = argTable;
-			infoPtr->type != TCL_ARGV_END; infoPtr++) {
-		if ((infoPtr->type == TCL_ARGV_HELP) && (infoPtr->key == NULL)) {
+			infoPtr->type != TCL_ARGV_SB_END; infoPtr++) {
+		if ((infoPtr->type == TCL_ARGV_SB_HELP) && (infoPtr->key == NULL)) {
 			Tcl_AppendResult(interp, "\n", infoPtr->help, (char *) NULL);
 			continue;
 		}
@@ -374,21 +374,21 @@ PrintUsage(interp, argTable)
 		}
 		Tcl_AppendResult(interp, infoPtr->help, (char *) NULL);
 		switch (infoPtr->type) {
-			case TCL_ARGV_INT:
+			case TCL_ARGV_SB_INT:
 				{
 					sprintf(tmp, "%d", *((int *) infoPtr->dst));
 					Tcl_AppendResult(interp, "\n\t\tDefault value: ",
 							tmp, (char *) NULL);
 					break;
 				}
-			case TCL_ARGV_FLOAT:
+			case TCL_ARGV_SB_FLOAT:
 				{
 					sprintf(tmp, "%g", *((double *) infoPtr->dst));
 					Tcl_AppendResult(interp, "\n\t\tDefault value: ",
 							tmp, (char *) NULL);
 					break;
 				}
-			case TCL_ARGV_STRING:
+			case TCL_ARGV_SB_STRING:
 				{
 					char *string;
 
@@ -399,8 +399,8 @@ PrintUsage(interp, argTable)
 					}
 					break;
 				}
-			case TCL_ARGV_IGNORE:
-			case TCL_ARGV_IGNORE_ARG:
+			case TCL_ARGV_SB_IGNORE:
+			case TCL_ARGV_SB_IGNORE_ARG:
 				{
 					Tcl_AppendResult(interp, "Ignored for compatibility.",
 							(char *) NULL);
