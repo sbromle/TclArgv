@@ -18,7 +18,14 @@ if (USE_CPP_ARGS)
 	)
 endif (USE_CPP_ARGS)
 
-add_library(TclParseArgv ${libTclParseArgv_SRCS})
+#MSVC needs shared option to generate proper .lib files
+IF(WIN32 OR MSVC)
+	add_library(TclParseArgv SHARED ${libTclParseArgv_SRCS})
+else(WIN32 OR MSVC)
+	add_library(TclParseArgv ${libTclParseArgv_SRCS})
+ENDIF(WIN32 OR MSVC)
+
+
 if (USE_TCL_STUBS)
 	if (DEFINED TCL_STUB_LIBRARY)
 		set (TCLLIB ${TCL_STUB_LIBRARY})
