@@ -36,6 +36,8 @@ extern int Tcl_ListObjAppendDoubles(Tcl_Interp *interp,
 		double *array, unsigned int n,
 		Tcl_Obj *rlist);
 
+extern int Tcl_InitTclArgv (Tcl_Interp *interp);
+
 /*
  * Legal values for the type field of a Tcl_ArgInfo: see the
  * user documentation for details.

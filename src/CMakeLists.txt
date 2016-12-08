@@ -2,6 +2,10 @@ include (FindTclStub)
 option (USE_TCL_STUBS "Enable use of TCL stubs library")
 option (USE_CPP_ARGS "Enable use of Tcl_GetArgsFromObjs variadic template function. Requires C++11")
 
+if (USE_TCL_STUBS)
+ADD_DEFINITIONS("-DUSE_TCL_STUBS")
+endif(USE_TCL_STUBS)
+
 include_directories(${TCL_INCLUDE_PATH})
 include_directories(.)
 

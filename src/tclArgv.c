@@ -429,7 +429,15 @@ int Tcl_ListObjAppendDoubles(Tcl_Interp *interp,
 	return TCL_OK;
 }
 
-
+//called before ever using any tclargv function calls
+int Tcl_InitTclArgv (Tcl_Interp *interp)
+{
+	//initialize the stubs before use
+	if(Tcl_InitStubs(interp,"8.6",0) == NULL)
+	{
+		return TCL_ERROR;
+	}
+}
 
 #ifdef __cplusplus
 } /* closing brace for extern "C" */
